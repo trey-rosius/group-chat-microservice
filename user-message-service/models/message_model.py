@@ -11,8 +11,8 @@ class MessageType(str, Enum):
 
 class MessageModel(BaseModel):
     id: str
-    user_id:str
-    group_id:str
+    user_id: str
+    group_id: str
     message_type: MessageType
     message_content: Optional[str]
     image_url: Optional[str]

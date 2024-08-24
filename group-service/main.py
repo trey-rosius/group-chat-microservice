@@ -25,7 +25,7 @@ def create_group(group_model: GroupModel) -> json:
                          key=str(group_model.id),
                          value=group_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
-            d.save_bulk_state()
+
 
             return {
                 "status_code": 201,
@@ -42,7 +42,7 @@ def create_group(group_model: GroupModel) -> json:
 def add_group_participant(group_id: str,userId_id:str):
     with DaprClient() as d:
         logging.info(f"User id={userId_id} and Group id={group_id}")
-        #group-users
+        #group-user-service
 
 
 @app.get('/v1.0/state/groups/{group_id}')
