@@ -1,0 +1,54 @@
+project: chat-app
+apps:
+- appId: groups
+  appPort: 5001
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/groups/4c39eb57-815e-4645-8189-95b92d9fa406
+    DAPR_APP_ID: groups
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_PUB_SUB: "aws-pub-sub"
+    DAPR_S3_BUCKET: "aws-s3-bucket"
+    DAPR_SEND_MESSAGE_TOPIC: "send-message"
+    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+  workDir: groups
+  command:
+  - uvicorn
+  - main:app
+  - --port
+  - "5001"
+- appId: messages
+  appPort: 5002
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/messages/ec73a4cd-dc84-4432-a104-c490f9885b77
+    DAPR_APP_ID: messages
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_PUB_SUB: "aws-pub-sub"
+    DAPR_S3_BUCKET: "aws-s3-bucket"
+    DAPR_SEND_MESSAGE_TOPIC: "send-message"
+    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+  workDir: messages
+  command:
+  - uvicorn
+  - main:app
+  - --port
+  - "5002"
+- appId: users
+  appPort: 5003
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/users/4e78294e-0fb7-4660-a3fe-d45525b95800
+    DAPR_APP_ID: users
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_PUB_SUB: "aws-pub-sub"
+    DAPR_S3_BUCKET: "aws-s3-bucket"
+    DAPR_SEND_MESSAGE_TOPIC: "send-message"
+    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+  workDir: users
+  command:
+  - uvicorn
+  - main:app
+  - --port
+  - "5003"
+appLogDestination: ""
