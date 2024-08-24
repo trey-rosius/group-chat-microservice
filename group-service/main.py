@@ -6,12 +6,12 @@ import grpc
 from dapr.clients import DaprClient
 from fastapi import FastAPI, HTTPException
 
-from models.group_model import GroupModel
+from models.group_model import GroupModel, MessageModel
 from models.cloud_events import CloudEvent
 
 group_db = os.getenv('DAPR_GROUPS_TABLE', '')
 pubsub_name = os.getenv('DAPR_PUB_SUB', '')
-send_message_topic = os.getenv('DAPR_SEND_MESSAGE_TOPIC', '')
+group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
 app = FastAPI()
 
@@ -40,7 +40,27 @@ def create_group(group_model: GroupModel) -> json:
 
 
 @app.post('/v1.0/publish/groups/{group_id}/messages')
-def add_group_message(group_id: str, message:Messages)
+def add_group_message(group_id: str, message:MessageModel):
+    with DaprClient() as d:
+        logging.info(f"message={message.model_dump()}")
+        try:
+            group_message_details = {
+                "message_model": message.model_dump_json(),
+                "event_type": "send-message"
+            }
+
+            d.publish_event(
+                pubsub_name=pubsub_name,
+                topic_name=group_subscription_topic,
+                data=json.dumps(group_message_details),
+                data_content_type='application/json',
+            )
+            return {"message": "successful"}
+
+        except grpc.RpcError as err:
+            logging.info(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
+
 
 
 @app.get('/v1.0/state/groups/{group_id}')
