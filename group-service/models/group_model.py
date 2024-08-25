@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -21,12 +21,19 @@ class MessageModel(BaseModel):
     updated_at: Optional[int]
 
 
+class Member(BaseModel):
+    user_id: str
+    role: str
+
+
 class GroupModel(BaseModel):
     id: str
     group_name: str
+    creator_id: str
     group_description: str
     last_message: Optional[MessageModel]
     created_by: str
     group_url: str
     created_at: int
+    members: List[Member]
     updated_at: Optional[int]

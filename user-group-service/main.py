@@ -2,8 +2,9 @@ import json
 import logging
 import os
 from models.cloud_events import CloudEvent
-from dapr.clients import DaprClient
+from dapr.clients import DaprClient, grpc
 from fastapi import FastAPI, HTTPException
+from models.user_group_model import UserGroupModel
 
 user_group_table = os.getenv('DAPR_USER_GROUP_TABLE', '')
 pubsub_name = os.getenv('DAPR_PUB_SUB', '')
@@ -16,5 +17,24 @@ logging.basicConfig(level=logging.INFO)
 
 # subscribe to add group participant event
 @app.post('/v1.0/subscribe/group/add-user')
-def add_group_participant(event: CloudEvent):
-    return
+def add_group_participant(cloud_event: CloudEvent):
+    logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
+    logging.info(f'Received User Group model event: %s:' % {cloud_event.data['user_group_model']})
+    user_group_data = cloud_event.data['user_group_model']
+    user_group_model = UserGroupModel(**json.loads(user_group_data))
+    with DaprClient() as d:
+        try:
+            d.save_state(store_name=user_group_table,
+                         key=str(user_group_model.id),
+                         value=user_group_model.model_dump_json(),
+                         state_metadata={"contentType": "application/json"})
+
+            return {
+                "status_code": 201,
+                "message": "user added to group successfully"
+            }
+        except grpc.RpcError as err:
+            logging.info(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
+
+
