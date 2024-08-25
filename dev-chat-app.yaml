@@ -1,31 +1,14 @@
 project: chat-app
 apps:
-- appId: group-message-service
-  appPort: 5001
-  env:
-    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/group-message-service/d07224d0-dc5d-4939-9451-130aadc513d0
-    DAPR_APP_ID: group-message-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_GROUP_MESSAGE_TABLE: "group-messages"
-    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
-    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: group-message-service
-  command:
-  - uvicorn
-  - main:app
-  - --port
-  - "5001"
 - appId: group-service
   appPort: 5002
   env:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/group-service/0d172161-b361-4adb-8b40-220c2a5df8ff
     DAPR_APP_ID: group-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_GROUP_TABLE: "groups-table"
+    DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
+    DAPR_GROUP_TABLE: groups-table
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: group-service
@@ -34,17 +17,48 @@ apps:
   - main:app
   - --port
   - "5002"
+- appId: message-service
+  appPort: 5001
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/message-service/207ea6de-9142-4f70-95a9-4a1ea5bf9519
+    DAPR_APP_ID: message-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_MESSAGES_TABLE: "message-table"
+    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+  workDir: message-service
+  command:
+  - uvicorn
+  - main:app
+  - --port
+  - "5001"
+- appId: read-receipts-service
+  appPort: 5005
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/read-receipts-service/365cd942-3d0e-454d-a707-6c5a91357083
+    DAPR_APP_ID: read-receipts-service
+    DAPR_READ_RECEIPTS_TABLE: "read-receipts-table"
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+  workDir: read-receipts-service
+  command:
+  - uvicorn
+  - main:app
+  - --port
+  - "5005"
 - appId: typing-indicator-service
   appPort: 5003
   env:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/typing-indicator-service/0282c307-71e3-46e5-a0de-ba77e58e0f90
     DAPR_APP_ID: typing-indicator-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_TYPING_INDICATOR_TABLE: "typing-indicator-table"
+    DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
+    DAPR_TYPING_INDICATOR_TABLE: typing-indicator-table
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
+
   workDir: typing-indicator-service
   command:
   - uvicorn
@@ -56,10 +70,10 @@ apps:
   env:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/user-group-service/2e5d466b-78fe-4c5d-99fc-6c413113eaf2
     DAPR_APP_ID: user-group-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_USER_GROUP_TABLE: "user-group"
+    DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
+    DAPR_USER_GROUP_TABLE: user-group
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: user-group-service
@@ -68,32 +82,15 @@ apps:
   - main:app
   - --port
   - "5004"
-- appId: user-message-service
-  appPort: 5005
-  env:
-    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/user-message-service/dfe8812a-f721-4506-9fce-aca53ccbee35
-    DAPR_APP_ID: user-message-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_USER_MESSAGES_TABLE: "user-messages"
-    DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
-    DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: user-message-service
-  command:
-  - uvicorn
-  - main:app
-  - --port
-  - "5005"
 - appId: user-service
   appPort: 5006
   env:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/user-service/4a8e15e1-fe6d-4dbd-8257-a09564e3a117
     DAPR_APP_ID: user-service
-    DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: "group-subscription"
-    DAPR_AWS_PUB_SUB_BROKER: "aws-pub-sub"
-    DAPR_USER_SERVICE_TABLE: "users-table"
+    DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
+    DAPR_USER_SERVICE_TABLE: users-table
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: user-service

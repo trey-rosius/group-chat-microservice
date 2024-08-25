@@ -20,12 +20,13 @@ class MessageModel(BaseModel):
     created_at: int
     updated_at: Optional[int]
 
+
 class GroupModel(BaseModel):
     id: str
     group_name: str
     group_description: str
+    last_message: Optional[MessageModel]
     created_by: str
     group_url: str
     created_at: int
     updated_at: Optional[int]
-

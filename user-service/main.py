@@ -11,7 +11,6 @@ user_db = os.getenv('DAPR_USERS_TABLE', '')
 pubsub_name = os.getenv('DAPR_PUB_SUB', '')
 send_message_topic = os.getenv('DAPR_SEND_MESSAGE_TOPIC', '')
 
-
 app = FastAPI()
 
 logging.basicConfig(level=logging.INFO)
@@ -27,9 +26,8 @@ def create_user_account(user_model: UserModel) -> json:
                          value=user_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
 
-
             return {
-                "status_code":201,
+                "status_code": 201,
                 "message": "User created"
             }
 
@@ -49,5 +47,3 @@ def get_user_account(user_id: str):
         except grpc.RpcError as err:
             print(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
-
-
