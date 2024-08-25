@@ -12,7 +12,7 @@ from models.cloud_events import CloudEvent
 
 typing_indicator_db = os.getenv('typing-indicator-table', '')
 pubsub_name = os.getenv('DAPR_PUB_SUB', '')
-send_message_topic = os.getenv('DAPR_SEND_MESSAGE_TOPIC', '')
+group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
 app = FastAPI()
 

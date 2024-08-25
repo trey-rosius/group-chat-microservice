@@ -7,7 +7,7 @@ apps:
     DAPR_APP_ID: group-service
     DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GROUP_TABLE: groups-table
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
@@ -23,7 +23,8 @@ apps:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/message-service/207ea6de-9142-4f70-95a9-4a1ea5bf9519
     DAPR_APP_ID: message-service
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
-    DAPR_MESSAGES_TABLE: "message-table"
+    DAPR_MESSAGES_TABLE: message-table
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: message-service
@@ -38,6 +39,7 @@ apps:
     DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/read-receipts-service/365cd942-3d0e-454d-a707-6c5a91357083
     DAPR_APP_ID: read-receipts-service
     DAPR_READ_RECEIPTS_TABLE: "read-receipts-table"
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
@@ -55,7 +57,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
     DAPR_TYPING_INDICATOR_TABLE: typing-indicator-table
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
 
@@ -73,7 +75,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_USER_GROUP_TABLE: user-group
     DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: user-group-service
@@ -90,7 +92,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_USER_SERVICE_TABLE: users-table
     DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
-    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription
+    DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: user-service

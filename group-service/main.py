@@ -6,7 +6,7 @@ import grpc
 from dapr.clients import DaprClient
 from fastapi import FastAPI, HTTPException
 
-from models.group_model import GroupModel, MessageModel,Member
+from models.group_model import GroupModel, MessageModel, Member
 from models.cloud_events import CloudEvent
 
 group_db = os.getenv('DAPR_GROUPS_TABLE', '')
@@ -101,7 +101,7 @@ def add_user_to_group(group_id: str, user_id: str, role: str):
                 "event_type": "add_group_participant"
             }
 
-            #get group
+            # get group
             group_data = d.get_state(group_db, group_id)
 
             group_model = GroupModel(**json.loads(group_data.data))
@@ -109,14 +109,13 @@ def add_user_to_group(group_id: str, user_id: str, role: str):
 
             member = Member(**member_data)
 
-            #update group
+            # update group
             group_model.members.append(member)
 
             d.save_state(store_name=group_db,
                          key=str(group_model.id),
                          value=group_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
-
 
             # publish add_group_participant
             d.publish_event(
