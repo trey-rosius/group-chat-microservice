@@ -7,7 +7,7 @@ import logging
 import os
 from models.user_model import UserModel
 
-user_db = os.getenv('DAPR_USERS_TABLE', '')
+user_db = os.getenv('DAPR_USER_SERVICE_TABLE', '')
 pubsub_name = os.getenv('DAPR_PUB_SUB', '')
 send_message_topic = os.getenv('DAPR_SEND_MESSAGE_TOPIC', '')
 

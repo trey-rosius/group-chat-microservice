@@ -14,5 +14,5 @@ class UserGroupModel(BaseModel):
     user_id: str
     group_id: str
     role: Role
-    last_read_msg_id: Optional[str]
-    last_read_timestamp: Optional[str]
+    last_read_msg_id: Optional[str]=None
+    last_read_timestamp: Optional[str]=None

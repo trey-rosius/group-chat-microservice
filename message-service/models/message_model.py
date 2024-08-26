@@ -14,8 +14,8 @@ class MessageModel(BaseModel):
     user_id: str
     group_id: str
     message_type: MessageType
-    message_content: Optional[str]
-    image_url: Optional[str]
-    video_url: Optional[str]
+    message_content: Optional[str]=None
+    image_url: Optional[str]=None
+    video_url: Optional[str]=None
     created_at: int
-    updated_at: Optional[int]
+    updated_at: Optional[int]=None

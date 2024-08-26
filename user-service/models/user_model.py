@@ -9,6 +9,6 @@ class UserModel(BaseModel):
     id: str
     email: str
     username: str
-    profile_pic_url: Optional[str]
+    profile_pic_url: Optional[str]=None
     created_at: int
-    updated_at: Optional[int]
+    updated_at: Optional[int]=None
