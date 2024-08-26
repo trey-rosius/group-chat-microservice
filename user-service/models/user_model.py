@@ -11,5 +11,4 @@ class UserModel(BaseModel):
     username: str
     profile_pic_url: Optional[str]=None
     created_at: int
-    groups: Optional[dict]
     updated_at: Optional[int]=None

@@ -18,6 +18,39 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+
+@app.post('/v1.0/publish/groups/{group_id}/messages')
+def send_group_message(group_id: str, message_model: MessageModel):
+    with DaprClient() as d:
+        logging.info(f"message={message_model.model_dump()}")
+        try:
+            group_message_details = {
+                "message_model": message_model.model_dump_json(),
+                "event_type": "send-message"
+            }
+            d.save_state(store_name=messages_db,
+                         key=str(message_model.id),
+                         value=message_model.model_dump_json(),
+                         state_metadata={"contentType": "application/json"})
+
+            d.publish_event(
+                pubsub_name=pubsub_name,
+                topic_name=group_subscription_topic,
+                data=json.dumps(group_message_details),
+                data_content_type='application/json',
+            )
+
+
+            return {
+                "status_code": 201,
+                "message": "message created successfully"
+            }
+
+        except grpc.RpcError as err:
+            logging.info(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
+
+
 @app.post('/v1.0/subscribe/group/messages')
 def save_user_message(cloud_event: CloudEvent):
     with DaprClient() as d:

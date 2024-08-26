@@ -7,6 +7,7 @@ from dapr.clients import DaprClient
 from fastapi import FastAPI, HTTPException
 
 from models.group_model import GroupModel, MessageModel, Member
+from models.add_group_participant_model import AddGroupParticipantModel
 from models.cloud_events import CloudEvent
 
 group_db = os.getenv('DAPR_GROUPS_TABLE', '')
@@ -24,13 +25,13 @@ def create_group(group_model: GroupModel):
         logging.info(f"Group={group_model.model_dump()}")
         try:
             user_group_details = {
-                "user_group_model": {
+                "user_group_model": json.dumps({
                     "id": f'{group_model.creator_id}-{group_model.id}',
                     "group_id": group_model.id,
                     "user_id": group_model.creator_id,
                     "role": "ADMIN"
-                },
-                "event_type": "add_group_participant"
+                }),
+                "event_type": "add-group-participant"
             }
 
             member_data = {"user_id": group_model.creator_id, "role": "ADMIN"}
@@ -63,40 +64,34 @@ def create_group(group_model: GroupModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/publish/groups/{group_id}/messages')
-def send_group_message(group_id: str, message: MessageModel):
+@app.post('/v1.0/subscribe/group/messages')
+async def subscribe_group_messages(cloud_event:CloudEvent):
     with DaprClient() as d:
-        logging.info(f"message={message.model_dump()}")
         try:
-            group_message_details = {
-                "message_model": message.model_dump_json(),
-                "event_type": "send-message"
-            }
+            logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
+            logging.info(f'Received message model event: %s:' % {cloud_event.data['message_model']})
 
-            # save message as last message to group DS
-            # first, we get the group
+            message_model = json.loads(cloud_event.data['message_model'])
 
-            group_data = d.get_state(group_db, group_id)
+            # get Group Data
+            group_data = d.get_state(group_db, message_model.group_id)
             group_model = GroupModel(**json.loads(group_data.data))
-            group_model.last_message = message
 
+            # Update last message attribute
+            group_model.last_message = message_model
+
+            # save group data
             d.save_state(store_name=group_db,
                          key=str(group_model.id),
                          value=group_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
 
-            # public send-message event
-            d.publish_event(
-                pubsub_name=pubsub_name,
-                topic_name=group_subscription_topic,
-                data=json.dumps(group_message_details),
-                data_content_type='application/json',
-            )
-            return {"message": "successful"}
-
+            logging.info("Group Info saved successfully")
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
+
+
 
 
 @app.get('/v1.0/state/groups/{group_id}')
@@ -108,29 +103,29 @@ def get_group(group_id: str):
 
             return group.model_dump()
         except grpc.RpcError as err:
-            print(f"Error={err.details()}")
+            logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/state/groups/{group_id}/users/{user_id}')
-def add_user_to_group(group_id: str, user_id: str, role: str):
+@app.post('/v1.0/state/groups/{group_id}/participants')
+def add_user_to_group(group_id:str, participants:AddGroupParticipantModel):
     with DaprClient() as d:
         try:
             user_group_details = {
-                "user_group_model": {
-                    "id": f'{user_id}-{group_id}',
+                "user_group_model": json.dumps({
+                    "id": f'{ participants.user_id}-{group_id}',
                     "group_id": group_id,
-                    "user_id": user_id,
-                    "role": role
-                },
-                "event_type": "add_group_participant"
+                    "user_id":  participants.user_id,
+                    "role": participants.role
+                }),
+                "event_type": "add-group-participant"
             }
 
             # get group
             group_data = d.get_state(group_db, group_id)
 
             group_model = GroupModel(**json.loads(group_data.data))
-            member_data = {"user_id": user_id, "role": role}
+            member_data = {"user_id":  participants.user_id, "role": participants.role}
 
             member = Member(**member_data)
 
