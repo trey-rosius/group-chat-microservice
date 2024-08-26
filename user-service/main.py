@@ -17,9 +17,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 @app.post('/v1.0/state/users')
-def create_user_account(user_model: UserModel) -> json:
+def create_user_account(user_model: UserModel):
     with DaprClient() as d:
-        print(f"User={user_model.model_dump()}")
+        logging.info(f"User={user_model.model_dump()}")
         try:
             d.save_state(store_name=user_db,
                          key=str(user_model.id),
@@ -45,5 +45,5 @@ def get_user_account(user_id: str):
 
             return user_account.model_dump()
         except grpc.RpcError as err:
-            print(f"Error={err.details()}")
+            logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())

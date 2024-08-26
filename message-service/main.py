@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.post('/v1.0/subscribe/group/messages')
-def save_user_message(cloud_event: CloudEvent) -> json:
+def save_user_message(cloud_event: CloudEvent):
     with DaprClient() as d:
         logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
         logging.info(f'Received message model event: %s:' % {cloud_event.data['message_model']})

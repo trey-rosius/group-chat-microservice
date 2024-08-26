@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 @app.post('/v1.0/state/groups')
-def create_group(group_model: GroupModel) -> json:
+def create_group(group_model: GroupModel):
     with DaprClient() as d:
         logging.info(f"User={group_model.model_dump()}")
         try:

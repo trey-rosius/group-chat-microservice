@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.post('/v1.0/state/typing')
-def add_typing_indicator(typing: TypingModel) -> json:
+def add_typing_indicator(typing: TypingModel):
     with DaprClient() as d:
         logging.info(f"Adding Typing Indicator for user: {typing.user_id} and group: {typing.group_id}")
 
@@ -43,7 +43,7 @@ def add_typing_indicator(typing: TypingModel) -> json:
 
 
 @app.post('/v1.0/subscribe/group/messages')
-def update_typing_indicator(cloud_event: CloudEvent) -> json:
+def update_typing_indicator(cloud_event: CloudEvent):
     with DaprClient() as d:
         logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
         logging.info(f'Received message model event: %s:' % {cloud_event.data['message_model']})
