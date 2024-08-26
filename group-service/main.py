@@ -23,10 +23,35 @@ def create_group(group_model: GroupModel):
     with DaprClient() as d:
         logging.info(f"User={group_model.model_dump()}")
         try:
+            user_group_details = {
+                "user_group_model": {
+                    "id": f'{group_model.user_id}-{group_model.group_id}',
+                    "group_id": group_model.id,
+                    "user_id": group_model.user_id,
+                    "role": "ADMIN"
+                },
+                "event_type": "add_group_participant"
+            }
+
+            member_data = {"user_id": group_model.user_id, "role": "ADMIN"}
+
+            member = Member(**member_data)
+
+            # update group
+            group_model.members.append(member)
+
             d.save_state(store_name=group_db,
                          key=str(group_model.id),
                          value=group_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
+
+            # publish add_group_participant
+            d.publish_event(
+                pubsub_name=pubsub_name,
+                topic_name=group_subscription_topic,
+                data=json.dumps(user_group_details),
+                data_content_type='application/json',
+            )
 
             return {
                 "status_code": 201,

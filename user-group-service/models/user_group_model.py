@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 
 class Role(str, Enum):
-    ADMIN = "admin"
-    MEMBER = "member"
+    ADMIN = "ADMIN"
+    MEMBER = "MEMBER"
 
 
 class UserGroupModel(BaseModel):
