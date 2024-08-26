@@ -8,7 +8,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_CLIENT_TIMEOUT_SECONDS: 10.0
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
-    DAPR_GROUP_TABLE: groups-table
+    DAPR_GROUPS_TABLE: groups-table
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
   workDir: group-service

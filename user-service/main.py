@@ -8,8 +8,8 @@ import os
 from models.user_model import UserModel
 
 user_db = os.getenv('DAPR_USER_SERVICE_TABLE', '')
-pubsub_name = os.getenv('DAPR_PUB_SUB', '')
-send_message_topic = os.getenv('DAPR_SEND_MESSAGE_TOPIC', '')
+pubsub_name = os.getenv('DAPR_AWS_PUB_SUB_BROKER', '')
+group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
 app = FastAPI()
 

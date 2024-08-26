@@ -10,7 +10,7 @@ from models.group_model import GroupModel, MessageModel, Member
 from models.cloud_events import CloudEvent
 
 group_db = os.getenv('DAPR_GROUPS_TABLE', '')
-pubsub_name = os.getenv('DAPR_PUB_SUB', '')
+pubsub_name = os.getenv('DAPR_AWS_PUB_SUB_BROKER', '')
 group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
 app = FastAPI()
@@ -21,19 +21,19 @@ logging.basicConfig(level=logging.INFO)
 @app.post('/v1.0/state/groups')
 def create_group(group_model: GroupModel):
     with DaprClient() as d:
-        logging.info(f"User={group_model.model_dump()}")
+        logging.info(f"Group={group_model.model_dump()}")
         try:
             user_group_details = {
                 "user_group_model": {
-                    "id": f'{group_model.user_id}-{group_model.group_id}',
+                    "id": f'{group_model.creator_id}-{group_model.id}',
                     "group_id": group_model.id,
-                    "user_id": group_model.user_id,
+                    "user_id": group_model.creator_id,
                     "role": "ADMIN"
                 },
                 "event_type": "add_group_participant"
             }
 
-            member_data = {"user_id": group_model.user_id, "role": "ADMIN"}
+            member_data = {"user_id": group_model.creator_id, "role": "ADMIN"}
 
             member = Member(**member_data)
 

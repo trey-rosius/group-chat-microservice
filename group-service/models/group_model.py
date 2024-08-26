@@ -32,8 +32,7 @@ class GroupModel(BaseModel):
     creator_id: str
     group_description: str
     last_message: Optional[MessageModel]=None
-    created_by: str
     group_url: str
     created_at: int
-    members: Optional[List[Member]]=None
+    members: Optional[List[Member]]= []
     updated_at: Optional[int]=None
