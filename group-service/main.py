@@ -65,7 +65,7 @@ def create_group(group_model: GroupModel):
 
 
 @app.post('/v1.0/subscribe/group/messages')
-async def subscribe_group_messages(cloud_event:CloudEvent):
+def subscribe_group_messages(cloud_event:CloudEvent):
     with DaprClient() as d:
         try:
             logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})

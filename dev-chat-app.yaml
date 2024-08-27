@@ -24,6 +24,7 @@ apps:
     DAPR_APP_ID: message-service
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
     DAPR_MESSAGES_TABLE: message-table
+    DAPR_AWS_PUB_SUB_BROKER: aws-pub-sub
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
