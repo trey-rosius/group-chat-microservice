@@ -49,28 +49,6 @@ def send_group_message(group_id: str, message_model: MessageModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/subscribe/group/messages')
-def save_user_message(cloud_event: CloudEvent):
-    with DaprClient() as d:
-        logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
-        logging.info(f'Received message model event: %s:' % {cloud_event.data['message_model']})
-
-        message_model = json.loads(cloud_event.data['message_model'])
-        try:
-            d.save_state(store_name=messages_db,
-                         key=str(message_model.id),
-                         value=message_model.model_dump_json(),
-                         state_metadata={"contentType": "application/json"})
-
-            return {
-                "status_code": 201,
-                "message": "message created successfully"
-            }
-
-        except grpc.RpcError as err:
-            logger.error(f"Failed to terminate workflow: {err}")
-            raise HTTPException(status_code=500, detail=str(err))
-
 
 @app.get('/v1.0/state/groups/{group_id}/messages')
 def get_messages_per_group(group_id: str, token: str, limit: int):

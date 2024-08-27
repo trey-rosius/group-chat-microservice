@@ -64,7 +64,7 @@ def create_group(group_model: GroupModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/subscribe/group/messages')
+@app.post('/v1.0/subscribe/groups/message')
 def subscribe_group_messages(cloud_event:CloudEvent):
     with DaprClient() as d:
         try:

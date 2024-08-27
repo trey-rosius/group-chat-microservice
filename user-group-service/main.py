@@ -38,25 +38,4 @@ def add_group_participant(cloud_event: CloudEvent):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/subscribe/group')
-def subscribe_participant(cloud_event: CloudEvent):
-    logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
-    logging.info(f'Received User Group model event: %s:' % {cloud_event.data['user_group_model']})
-    user_group_data = cloud_event.data['user_group_model']
-    user_group_model = UserGroupModel(**json.loads(user_group_data))
-    with DaprClient() as d:
-        try:
-            d.save_state(store_name=user_group_table,
-                         key=str(user_group_model.id),
-                         value=user_group_model.model_dump_json(),
-                         state_metadata={"contentType": "application/json"})
-
-            return {
-                "status_code": 201,
-                "message": "user added to group successfully"
-            }
-        except grpc.RpcError as err:
-            logging.info(f"Error={err.details()}")
-            raise HTTPException(status_code=500, detail=err.details())
-
 

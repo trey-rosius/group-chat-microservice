@@ -42,7 +42,7 @@ def add_typing_indicator(typing: TypingModel):
             raise HTTPException(status_code=500, detail=str(err))
 
 
-@app.post('/v1.0/subscribe/group/messages')
+@app.post('/v1.0/subscribe/groups/message')
 def update_typing_indicator(cloud_event: CloudEvent):
     with DaprClient() as d:
         logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
