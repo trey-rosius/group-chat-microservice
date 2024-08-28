@@ -59,7 +59,7 @@ export class CdkInfraStack extends cdk.Stack {
         publicLoadBalancer: true // can be set to false
       });
 
-      // Add Scalling
+      // Add Scaling
       const scaling = fargateService.service.autoScaleTaskCount({ maxCapacity: 5, minCapacity: 1 });
       scaling.scaleOnCpuUtilization("CpuScaling", { targetUtilizationPercent: 70 }); // default cooldown of 5 min
       scaling.scaleOnMemoryUtilization("RamScaling", { targetUtilizationPercent: 70 }); // default cooldown of 5 min
