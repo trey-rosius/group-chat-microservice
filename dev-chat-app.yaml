@@ -11,7 +11,7 @@ apps:
     DAPR_GROUPS_TABLE: groups-table
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: group-service
+  workDir: services/group-service
   command:
   - uvicorn
   - main:app
@@ -28,7 +28,7 @@ apps:
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: message-service
+  workDir: services/message-service
   command:
   - uvicorn
   - main:app
@@ -44,7 +44,7 @@ apps:
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: read-receipts-service
+  workDir: services/read-receipts-service
   command:
   - uvicorn
   - main:app
@@ -61,8 +61,7 @@ apps:
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-
-  workDir: typing-indicator-service
+  workDir: services/typing-indicator-service
   command:
   - uvicorn
   - main:app
@@ -79,7 +78,7 @@ apps:
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: user-group-service
+  workDir: services/user-group-service
   command:
   - uvicorn
   - main:app
@@ -96,7 +95,7 @@ apps:
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GRPC_ENDPOINT: https://grpc-prj216976.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj216976.api.cloud.diagrid.io
-  workDir: user-service
+  workDir: services/user-service
   command:
   - uvicorn
   - main:app

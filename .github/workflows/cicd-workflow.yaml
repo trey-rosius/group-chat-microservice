@@ -1,0 +1,78 @@
+name: Deploy the Nodejs App and Build the Image
+
+on:
+  push:
+    branches:
+        - main
+
+jobs:
+  run-cicd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+      - name: Install the CDK Dependency
+        run: |
+          npm install -g aws-cdk
+      - name: Install other dependencies
+        run: |
+          npm install
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Deploy repoStackName to AWS
+        run: cdk deploy repoStackName --require-approval=never
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker images
+        run: |
+          for service in ./services/*/ ; do
+            service_name=$(basename "$service")
+            ecr_repo="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/$service_name"
+            echo "Building Docker image for $service_name"
+            docker build -t "$ecr_repo:latest" "$service"
+            echo "Pushing Docker image to ECR for $service_name"
+            docker push "$ecr_repo:latest"
+          done
+
+
+      - name: Deploy DevopsAppStack to AWS
+        run: cdk deploy DevopsAppStack --require-approval=never
+        working-directory: ./cdk-infra
+
+      - name: Update Cluster to get the most recent image
+        run: |
+          for service in ./services/*/ ; do
+            service_name=$(basename "$service")
+            aws ecs update-service --cluster eda-ecs-cluster --service $service_name --force-new-deployment
+          done
+
+
+      - name: Retrieving the DNS for the services
+        run: |
+          for service in ./services/*/ ; do
+            alb_name=$(basename "$service")
+            alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
+            echo "ALB DNS: $alb_dns"
+            echo "::set-output name=alb_dns::$alb_dns"
+          done
