@@ -17,6 +17,9 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+@app.get('/')
+def health_check():
+    return "Ok"
 @app.post('/v1.0/read-receipts/group/messages')
 def add_read_receipts(message: ReadReceiptModel ):
     return

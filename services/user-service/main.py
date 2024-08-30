@@ -15,7 +15,9 @@ app = FastAPI()
 
 logging.basicConfig(level=logging.INFO)
 
-
+@app.get('/')
+def health_check():
+    return "Ok"
 @app.post('/v1.0/state/users')
 def create_user_account(user_model: UserModel):
     with DaprClient() as d:

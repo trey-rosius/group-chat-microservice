@@ -20,6 +20,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@app.get('/')
+def health_check():
+    return "Ok"
+
 @app.post('/v1.0/state/typing')
 def add_typing_indicator(typing: TypingModel):
     with DaprClient() as d:

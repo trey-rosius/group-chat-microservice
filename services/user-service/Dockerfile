@@ -7,7 +7,7 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 ARG PYTHON_VERSION=3.11.6
-FROM python:${PYTHON_VERSION}-slim as base
+FROM --platform=linux/amd64 python:${PYTHON_VERSION}-slim as base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,7 +19,7 @@ ENV DAPR_USER_SERVICE_TABLE=users-table
 ENV DAPR_CLIENT_TIMEOUT_SECONDS=10.0
 ENV  DAPR_GROUP_SUBSCRIPTION_TOPIC=group-subscription-topic
 ENV DAPR_GRPC_ENDPOINT=https://grpc-prj216976.api.cloud.diagrid.io:443
-ENV DAPR_HTTP_ENDPOINT=https://http-prj216976.api.cloud.diagrid.io
+ENV DAPR_HTTP_ENDPOIN=https://http-prj216976.api.cloud.diagrid.io
 # Keeps Python from buffering stdout and stderr to avoid situations where
 # the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1
@@ -38,6 +38,8 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+COPY requirements.txt .
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -53,7 +55,8 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 5006
+# Expose the port that the application listens on.
+ENV UVICORN_PORT 5006
 
-# Run the application.
-CMD uvicorn 'main:app' --host=0.0.0.0 --port=5006
+# Run the FastAPI application using uvicorn server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]

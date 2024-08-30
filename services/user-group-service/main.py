@@ -15,6 +15,10 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 
 
+
+@app.get('/')
+def health_check():
+    return "Ok"
 # subscribe to add group participant event
 @app.post('/v1.0/subscribe/group/add-user')
 def add_group_participant(cloud_event: CloudEvent):

@@ -38,6 +38,7 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+COPY requirements.txt .
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -53,7 +54,7 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 5005
+ENV UVICORN_PORT 5005
 
-# Run the application.
-CMD uvicorn 'main:app' --host=0.0.0.0 --port=5005
+# Run the FastAPI application using uvicorn server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]

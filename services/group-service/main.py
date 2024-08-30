@@ -19,6 +19,11 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 
 
+@app.get('/')
+def health_check():
+    return "Ok"
+
+
 @app.post('/v1.0/state/groups')
 def create_group(group_model: GroupModel):
     with DaprClient() as d:
@@ -65,7 +70,7 @@ def create_group(group_model: GroupModel):
 
 
 @app.post('/v1.0/subscribe/groups/message')
-def subscribe_group_messages(cloud_event:CloudEvent):
+def subscribe_group_messages(cloud_event: CloudEvent):
     with DaprClient() as d:
         try:
             logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
@@ -92,8 +97,6 @@ def subscribe_group_messages(cloud_event:CloudEvent):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-
-
 @app.get('/v1.0/state/groups/{group_id}')
 def get_group(group_id: str):
     with DaprClient() as d:
@@ -108,14 +111,14 @@ def get_group(group_id: str):
 
 
 @app.post('/v1.0/state/groups/{group_id}/participants')
-def add_user_to_group(group_id:str, participants:AddGroupParticipantModel):
+def add_user_to_group(group_id: str, participants: AddGroupParticipantModel):
     with DaprClient() as d:
         try:
             user_group_details = {
                 "user_group_model": json.dumps({
-                    "id": f'{ participants.user_id}-{group_id}',
+                    "id": f'{participants.user_id}-{group_id}',
                     "group_id": group_id,
-                    "user_id":  participants.user_id,
+                    "user_id": participants.user_id,
                     "role": participants.role
                 }),
                 "event_type": "add-group-participant"
@@ -125,7 +128,7 @@ def add_user_to_group(group_id:str, participants:AddGroupParticipantModel):
             group_data = d.get_state(group_db, group_id)
 
             group_model = GroupModel(**json.loads(group_data.data))
-            member_data = {"user_id":  participants.user_id, "role": participants.role}
+            member_data = {"user_id": participants.user_id, "role": participants.role}
 
             member = Member(**member_data)
 

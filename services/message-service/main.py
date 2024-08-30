@@ -18,6 +18,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@app.get('/')
+def health_check():
+    return "Ok"
+
+
 @app.post('/v1.0/state/groups/{group_id}/messages')
 def send_group_message(group_id: str, message_model: MessageModel):
     with DaprClient() as d:
@@ -47,7 +52,6 @@ def send_group_message(group_id: str, message_model: MessageModel):
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
-
 
 
 @app.get('/v1.0/state/groups/{group_id}/messages')
