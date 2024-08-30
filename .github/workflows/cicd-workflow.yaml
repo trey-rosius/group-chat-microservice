@@ -62,14 +62,14 @@ jobs:
         run: |
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
-            aws ecs update-service --cluster eda-ecs-cluster --service $service_name --force-new-deployment
+            aws ecs update-service --cluster GROUP-CHAT-cluster --service $service_name --force-new-deployment
           done
 
 
       - name: Retrieving the DNS for the services
         run: |
           for service in ./services/*/ ; do
-            alb_name=$(basename "$service")
+            alb_name=$(basename "$service")-ALB
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
