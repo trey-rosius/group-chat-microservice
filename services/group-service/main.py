@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from typing import Optional
 
 import grpc
 from dapr.clients import DaprClient
@@ -59,10 +60,7 @@ def create_group(group_model: GroupModel):
                 data_content_type='application/json',
             )
 
-            return {
-                "status_code": 201,
-                "message": "Group created successfully"
-            }
+            return group_model
 
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
@@ -152,3 +150,42 @@ def add_user_to_group(group_id: str, participants: AddGroupParticipantModel):
         except grpc.RpcError as err:
             logging.error(f"Failed to terminate workflow: {err}")
             raise HTTPException(status_code=500, detail=str(err))
+
+@app.get('/groups')
+def get_groups( token: Optional[str] = None, limit: int = 10):
+    with DaprClient() as d:
+        try:
+            groups = []
+            query_filter = {
+
+                "sort": [
+                    {
+                        "key": "created_at",
+                        "order": "DESC"
+                    }
+                ],
+                "page": {
+                    "limit": limit
+
+                }
+            }
+            # Add the token only if it is not None
+            if token:
+                query_filter["page"]["token"] = token
+
+            query_filter_json = json.dumps(query_filter)
+            logging.info(f'query filter: {query_filter_json}')
+
+            groups_kv = d.query_state(
+                store_name=group_db,
+                query=query_filter_json
+            )
+            for item in groups_kv.results:
+                group_model = GroupModel(**json.loads(item.value))
+                groups.append(group_model)
+                logging.info(f"message{group_model.model_dump()}")
+
+            return groups
+        except grpc.RpcError as err:
+            print(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
