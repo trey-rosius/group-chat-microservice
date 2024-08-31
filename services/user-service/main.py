@@ -31,10 +31,7 @@ def create_user_account(user_model: UserModel):
                          value=user_model.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
 
-            return {
-                "status_code": 201,
-                "message": "User created"
-            }
+            return user_model
 
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
