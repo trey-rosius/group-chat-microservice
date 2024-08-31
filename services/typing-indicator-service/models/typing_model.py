@@ -5,6 +5,6 @@ from pydantic import BaseModel
 
 class TypingModel(BaseModel):
     id: str
-    userId: str
-    groupId: str
+    user_id: str
+    group_id: str
     typing: bool
