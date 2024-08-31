@@ -32,7 +32,7 @@ def add_typing_indicator(typing: TypingModel):
 
         try:
             d.save_state(store_name=typing_indicator_db,
-                         key=f'{typing.user_id}-{typing.groupId}',
+                         key=f'{typing.user_id}-{typing.group_id}',
                          value=typing.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
 
