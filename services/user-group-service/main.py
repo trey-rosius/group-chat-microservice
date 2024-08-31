@@ -6,7 +6,7 @@ from dapr.clients import DaprClient, grpc
 from fastapi import FastAPI, HTTPException
 from models.user_group_model import UserGroupModel
 
-user_group_table = os.getenv('DAPR_USER_GROUP_TABLE', '')
+user_group_table = os.getenv('DAPR_USER_GROUPS_TABLE', '')
 pubsub_name = os.getenv('DAPR_AWS_PUB_SUB_BROKER', '')
 group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
@@ -15,12 +15,13 @@ app = FastAPI()
 logging.basicConfig(level=logging.INFO)
 
 
-
 @app.get('/')
 def health_check():
-    return "Ok"
+    return {"Health is Ok"}
+
+
 # subscribe to add group participant event
-@app.post('/v1.0/subscribe/group/add-user')
+@app.post('/group/add-user')
 def add_group_participant(cloud_event: CloudEvent):
     logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
 
@@ -40,6 +41,3 @@ def add_group_participant(cloud_event: CloudEvent):
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
-
-
-

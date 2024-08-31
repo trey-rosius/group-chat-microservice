@@ -10,7 +10,7 @@ import os
 from models.typing_model import TypingModel
 from models.cloud_events import CloudEvent
 
-typing_indicator_db = os.getenv('typing-indicator-table', '')
+typing_indicator_db = os.getenv('DAPR_TYPING_INDICATOR_TABLE', '')
 pubsub_name = os.getenv('DAPR_AWS_PUB_SUB_BROKER', '')
 group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
@@ -22,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 @app.get('/')
 def health_check():
-    return "Ok"
+    return {"Health is Ok"}
 
-@app.post('/v1.0/state/typing')
+
+@app.post('/typing')
 def add_typing_indicator(typing: TypingModel):
     with DaprClient() as d:
         logging.info(f"Adding Typing Indicator for user: {typing.user_id} and group: {typing.group_id}")
@@ -46,7 +47,7 @@ def add_typing_indicator(typing: TypingModel):
             raise HTTPException(status_code=500, detail=str(err))
 
 
-@app.post('/v1.0/subscribe/groups/message')
+@app.post('/groups/message')
 def update_typing_indicator(cloud_event: CloudEvent):
     with DaprClient() as d:
         logging.info(f'Received event: %s:' % {cloud_event.model_dump_json()})
@@ -54,17 +55,17 @@ def update_typing_indicator(cloud_event: CloudEvent):
 
         message_model = json.loads(cloud_event.data['message_model'])
 
-        typing_indicator = TypingModel(
-            id=f"{message_model['user_id']} - {message_model['group_id']}",
-            user_id=message_model['user_id'],
-            group_id=message_model['group_id'],
-            typing=False
-        )
+        typing_indicator = {
+            "id": f"{message_model['user_id']} - {message_model['group_id']}",
+            "user_id": message_model['user_id'],
+            "group_id": message_model['group_id'],
+            "typing": False
+        }
 
         try:
             d.save_state(store_name=typing_indicator_db,
-                         key=typing_indicator.id,
-                         value=typing_indicator.model_dump_json(),
+                         key=typing_indicator["id"],
+                         value=json.dumps(typing_indicator),
                          state_metadata={"contentType": "application/json"})
 
             return {

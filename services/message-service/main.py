@@ -1,3 +1,5 @@
+from typing import Optional
+
 import grpc
 import json
 
@@ -20,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 @app.get('/')
 def health_check():
-    return "Ok"
+    return {"Health is Ok"}
 
 
-@app.post('/v1.0/state/groups/{group_id}/messages')
+@app.post('/groups/{group_id}/messages')
 def send_group_message(group_id: str, message_model: MessageModel):
     with DaprClient() as d:
         logging.info(f"message={message_model.model_dump()}")
@@ -54,8 +56,8 @@ def send_group_message(group_id: str, message_model: MessageModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.get('/v1.0/state/groups/{group_id}/messages')
-def get_messages_per_group(group_id: str, token: str, limit: int):
+@app.get('/groups/{group_id}/messages')
+def get_messages_per_group(group_id: str, token: Optional[str] = None, limit: int = 10):
     with DaprClient() as d:
         try:
             messages = []

@@ -21,10 +21,10 @@ logging.basicConfig(level=logging.INFO)
 
 @app.get('/')
 def health_check():
-    return "Ok"
+    return {"Health is Ok"}
 
 
-@app.post('/v1.0/state/groups')
+@app.post('/groups')
 def create_group(group_model: GroupModel):
     with DaprClient() as d:
         logging.info(f"Group={group_model.model_dump()}")
@@ -69,7 +69,7 @@ def create_group(group_model: GroupModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/subscribe/groups/message')
+@app.post('/groups/message')
 def subscribe_group_messages(cloud_event: CloudEvent):
     with DaprClient() as d:
         try:
@@ -97,7 +97,7 @@ def subscribe_group_messages(cloud_event: CloudEvent):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.get('/v1.0/state/groups/{group_id}')
+@app.get('/groups/{group_id}')
 def get_group(group_id: str):
     with DaprClient() as d:
         try:
@@ -110,7 +110,7 @@ def get_group(group_id: str):
             raise HTTPException(status_code=500, detail=err.details())
 
 
-@app.post('/v1.0/state/groups/{group_id}/participants')
+@app.post('/groups/{group_id}/participant')
 def add_user_to_group(group_id: str, participants: AddGroupParticipantModel):
     with DaprClient() as d:
         try:
