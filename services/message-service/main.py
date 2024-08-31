@@ -46,10 +46,7 @@ def send_group_message(group_id: str, message_model: MessageModel):
                 data_content_type='application/json',
             )
 
-            return {
-                "status_code": 201,
-                "message": "message created successfully"
-            }
+            return message_model
 
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")

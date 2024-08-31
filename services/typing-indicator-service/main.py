@@ -36,10 +36,7 @@ def add_typing_indicator(typing: TypingModel):
                          value=typing.model_dump_json(),
                          state_metadata={"contentType": "application/json"})
 
-            return {
-                "status_code": 201,
-                "message": "added typing indicator"
-            }
+            return typing
 
 
         except grpc.RpcError as err:
