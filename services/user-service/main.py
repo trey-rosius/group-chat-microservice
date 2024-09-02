@@ -1,3 +1,5 @@
+from typing import Optional
+
 import grpc
 import json
 
@@ -45,7 +47,46 @@ def get_user_account(user_id: str):
             kv = d.get_state(user_db, user_id)
             user_account = UserModel(**json.loads(kv.data))
 
-            return user_account.model_dump()
+            return user_account
         except grpc.RpcError as err:
             logging.info(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
+
+@app.get('/users')
+def get_groups( token: Optional[str] = None, limit: int = 10):
+    with DaprClient() as d:
+        try:
+            users = []
+            query_filter = {
+
+                "sort": [
+                    {
+                        "key": "created_at",
+                        "order": "DESC"
+                    }
+                ],
+                "page": {
+                    "limit": limit
+
+                }
+            }
+            # Add the token only if it is not None
+            if token:
+                query_filter["page"]["token"] = token
+
+            query_filter_json = json.dumps(query_filter)
+            logging.info(f'query filter: {query_filter_json}')
+
+            user_kv = d.query_state(
+                store_name=user_db,
+                query=query_filter_json
+            )
+            for item in user_kv.results:
+                user_model = UserModel(**json.loads(item.value))
+                users.append(user_model)
+                logging.info(f"message{user_model.model_dump()}")
+
+            return users
+        except grpc.RpcError as err:
+            print(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
