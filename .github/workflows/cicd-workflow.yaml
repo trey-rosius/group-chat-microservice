@@ -3,7 +3,7 @@ name: Deploy the CDK Infrastructure and Build the Catalyst Service Images
 on:
   push:
     branches:
-      - main
+        - main
 
 jobs:
   run-cicd:
@@ -16,18 +16,35 @@ jobs:
       - name: Install the CDK Dependency
         run: |
           npm install -g aws-cdk
-
       # Install Diagrid CLI
       - name: Install Diagrid CLI
         run: |
+          # Download the latest Diagrid CLI from GitHub or direct source
           curl -o- https://downloads.diagrid.io/cli/install.sh | bash
-
+          sudo mv ./diagrid /usr/local/bin
       # Test Diagrid command
       - name: Run Diagrid Version Command
-        run: diagrid -h
-
+        run: |
+          diagrid -h
       - name: Install other dependencies
-        run: npm install
+        run: |
+          npm install
+        working-directory: ./cdk-infra
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+      - name: Synthesize CDK Stack
+        run: cdk synth
+        working-directory: ./cdk-infra
+      - name: Bootstrap CDK Stack
+        run: cdk bootstrap
+        working-directory: ./cdk-infra
+
+      - name: Deploy repoStackName to AWS
+        run: cdk deploy repoStackName --require-approval=never
         working-directory: ./cdk-infra
 
       - name: Configure AWS credentials
@@ -36,18 +53,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-
-      - name: Synthesize CDK Stack
-        run: cdk synth
-        working-directory: ./cdk-infra
-
-      - name: Bootstrap CDK Stack
-        run: cdk bootstrap
-        working-directory: ./cdk-infra
-
-      - name: Deploy repoStackName to AWS
-        run: cdk deploy repoStackName --require-approval=never
-        working-directory: ./cdk-infra
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -64,26 +69,27 @@ jobs:
             docker push "$ecr_repo:latest"
           done
 
+
       - name: Deploy CdkInfraStack to AWS
         run: cdk deploy CdkInfraStack --require-approval=never
         working-directory: ./cdk-infra
 
-      - name: Update ECS Cluster with latest images
+      - name: Update Cluster to get the most recent image
         run: |
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
             aws ecs update-service --cluster GROUP-CHAT-cluster --service $service_name --force-new-deployment
           done
 
-      - name: Retrieve ALB DNS and update appIDs
+
+      - name: Retrieving the DNS for the services and updating the appIDs
         run: |
           for service in ./services/*/ ; do
             alb_name=$(basename "$service")-ALB
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
-            echo "ALB_DNS=$alb_dns" >> $GITHUB_ENV  # Use GitHub Actions environment file
+            echo "::set-output name=alb_dns::$alb_dns"
           done
-
       - name: Set Diagrid service Endpoint URL
         run: |
           diagrid appid update group-service \
