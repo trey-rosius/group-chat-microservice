@@ -89,5 +89,5 @@ jobs:
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
-            diagrid appid update $service --app-endpoint http://$alb_dns -w --api-key ${{ secrets.DIAGRID_API_KEY }} --project group-chat-microservice
+            diagrid appid update $service --app-endpoint http:// -w --api-key ${{ secrets.DIAGRID_API_KEY }} --project group-chat-microservice
           done
