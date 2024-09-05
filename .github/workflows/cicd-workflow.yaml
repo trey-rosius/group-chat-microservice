@@ -26,6 +26,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: "us-east-1"
+      - name: Synthesize CDK Stack
+        run: cdk synth
+        working-directory: ./cdk-infra
+      - name: Bootstrap CDK Stack
+        run: cdk bootstrap
+        working-directory: ./cdk-infra
 
       - name: Deploy repoStackName to AWS
         run: cdk deploy repoStackName --require-approval=never
