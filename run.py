@@ -104,8 +104,8 @@ def create_connections(project_name, connection_name, connection_type, scope,
                        table_name=None):
     with yaspin(text=f"Creating connection {connection_name}...", timer=True) as spinner:
         try:
-            CONNECTION_ACCESS_KEY = os.getenv('CONNECTION_ACCESS_KEY')
-            CONNECTION_SECRET_KEY = os.getenv('CONNECTION_SECRET_KEY')
+            CONNECTION_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
+            CONNECTION_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
             AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
             if connection_type == "pubsub":
                 run_command(
@@ -134,12 +134,12 @@ def create_subscription(project_name: str, subscription_name: str):
         try:
             print(f"Group Subscription yaml file path {group_subs_file_path}")
             run_command(
-                f"diagrid subscriptions apply --wait --file {group_subs_file_path}",check=True)
+                f"diagrid subscriptions apply --wait --file {group_subs_file_path}")
             spinner.ok("✅")
         except subprocess.CalledProcessError as e:
             spinner.fail("❌")
             if e.output:
-                spinner.write(f"")
+                spinner.write(f"{e.output}")
             if e.stderr:
                 spinner.write(f"{e.stderr}")
             sys.exit(1)

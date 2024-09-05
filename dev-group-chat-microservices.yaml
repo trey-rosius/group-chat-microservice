@@ -1,0 +1,63 @@
+project: group-chat-microservices
+apps:
+- appId: group-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/group-service/9d79e1b0-f0ec-4a16-99d8-19cbc075b08d
+    DAPR_APP_ID: group-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: group-service
+  command: []
+- appId: message-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/message-service/0f8f6f40-de61-4194-8cb0-8805321592bb
+    DAPR_APP_ID: message-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: message-service
+  command: []
+- appId: read-receipts-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/read-receipts-service/9eee1414-7fe9-4c01-9199-6b26b6f658bc
+    DAPR_APP_ID: read-receipts-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: read-receipts-service
+  command: []
+- appId: typing-indicator-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/typing-indicator-service/2167d2b7-53ed-47a6-a913-f0bf04f9ef81
+    DAPR_APP_ID: typing-indicator-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: typing-indicator-service
+  command: []
+- appId: user-group-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/user-group-service/850c4923-2cef-4ee3-989a-26d48703462c
+    DAPR_APP_ID: user-group-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: user-group-service
+  command: []
+- appId: user-service
+  appPort: 0
+  env:
+    DAPR_API_TOKEN: diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/241490/group-chat-microservices/user-service/23eeb24e-73b4-4b0c-bf54-66b77dba02cb
+    DAPR_APP_ID: user-service
+    DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GRPC_ENDPOINT: https://grpc-prj241490.api.cloud.diagrid.io:443
+    DAPR_HTTP_ENDPOINT: https://http-prj241490.api.cloud.diagrid.io
+  workDir: user-service
+  command: []
+appLogDestination: ""
