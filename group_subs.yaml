@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   name: group-subscription-topic
 spec:
-  projectId: group-chat-microservice
+  projectId: group-chat-microservices
   scopes:
     - typing-indicator-service
     - user-group-service

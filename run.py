@@ -139,7 +139,7 @@ def create_subscription(project_name: str, subscription_name: str):
         except subprocess.CalledProcessError as e:
             spinner.fail("❌")
             if e.output:
-                spinner.write()
+                spinner.write(f"")
             if e.stderr:
                 spinner.write(f"{e.stderr}")
             sys.exit(1)
@@ -234,7 +234,7 @@ def scaffold_and_update_config(config_file):
 
 def main():
     # prj_name = os.getenv('group-chat-microservice')
-    prj_name = "group-chat-microservice"
+    prj_name = "group-chat-microservices"
 
     config_file_name = f"dev-{prj_name}.yaml"
     os.environ['CONFIG_FILE'] = config_file_name
