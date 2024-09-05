@@ -20,9 +20,8 @@ jobs:
       - name: Install Diagrid CLI
         run: |
           # Download the latest Diagrid CLI from GitHub or direct source
-          curl -LO https://cli-diagrid.s3.amazonaws.com/diagrid-v0.6.0-linux-amd64.tar.gz
-          tar -xvf diagrid-v0.6.0-linux-amd64.tar.gz
-          sudo mv diagrid /usr/local/bin/
+          curl -o- https://downloads.diagrid.io/cli/install.sh | bash
+          sudo mv ./diagrid /usr/local/bin
       # Test Diagrid command
       - name: Run Diagrid Version Command
         run: |
