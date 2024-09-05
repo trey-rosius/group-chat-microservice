@@ -53,6 +53,8 @@ def send_group_message(group_id: str, message_model: MessageModel):
             raise HTTPException(status_code=500, detail=err.details())
 
 
+
+'''
 @app.get('/groups/{group_id}/messages')
 def get_messages_per_group(group_id: str, token: Optional[str] = None, limit: int = 10):
     with DaprClient() as d:
@@ -95,3 +97,4 @@ def get_messages_per_group(group_id: str, token: Optional[str] = None, limit: in
         except grpc.RpcError as err:
             print(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
+'''

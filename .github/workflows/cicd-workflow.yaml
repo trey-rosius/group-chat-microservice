@@ -66,11 +66,12 @@ jobs:
           done
 
 
-      - name: Retrieving the DNS for the services
+      - name: Retrieving the DNS for the services and updating the appIDs
         run: |
           for service in ./services/*/ ; do
             alb_name=$(basename "$service")-ALB
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
+            diagrid appid update service --app-endpoint https://$alb_dns -w --api-key ${{ secrets.DIAGRID_API_KEY }} --project group-chat-microservice
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
           done

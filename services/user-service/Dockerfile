@@ -12,14 +12,14 @@ FROM --platform=linux/amd64 python:${PYTHON_VERSION}-slim as base
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
 
-ENV  DAPR_API_TOKEN=diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/user-service/4a8e15e1-fe6d-4dbd-8257-a09564e3a117
-ENV  DAPR_APP_ID=user-service
-ENV DAPR_AWS_PUB_SUB_BROKER=aws-pub-sub
-ENV DAPR_USERS_TABLE=users-table
-ENV DAPR_CLIENT_TIMEOUT_SECONDS=10.0
-ENV  DAPR_GROUP_SUBSCRIPTION_TOPIC=group-subscription-topic
-ENV DAPR_GRPC_ENDPOINT=https://grpc-prj216976.api.cloud.diagrid.io:443
-ENV DAPR_HTTP_ENDPOIN=https://http-prj216976.api.cloud.diagrid.io
+ENV DAPR_API_TOKEN=diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/240898/group-chat-microservice/user-service/8fbe0c85-91f0-47eb-b0bf-7bd8e092fe18
+ENV DAPR_APP_ID=user-service
+ENV DAPR_AWS_PUB_SUB_BROKER=aws-pubsub
+ENV DAPR_USERS_TABLE=user-service-table
+ENV DAPR_GROUP_SUBSCRIPTION_TOPIC=group-subscription-topic
+ENV DAPR_CLIENT_TIMEOUT_SECONDS=10
+ENV DAPR_GRPC_ENDPOINT=https://grpc-prj240898.api.cloud.diagrid.io:443
+ENV DAPR_HTTP_ENDPOINT=https://http-prj240898.api.cloud.diagrid.io
 # Keeps Python from buffering stdout and stderr to avoid situations where
 # the application crashes without emitting any logs due to buffering.
 ENV PYTHONUNBUFFERED=1

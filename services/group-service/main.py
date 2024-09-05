@@ -82,6 +82,7 @@ def subscribe_group_messages(cloud_event: CloudEvent):
 
             # Update last message attribute
             group_model.last_message = message_model
+            group_model.messages.append(message_model)
 
             # save group data
             d.save_state(store_name=group_db,
@@ -94,6 +95,18 @@ def subscribe_group_messages(cloud_event: CloudEvent):
             logging.info(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
 
+
+@app.get('/groups/{group_id}/messages')
+def get_messages_per_group(group_id: str):
+    with DaprClient() as d:
+        try:
+            kv = d.get_state(group_db, group_id)
+            group = GroupModel(**json.loads(kv.data))
+
+            return group.messages
+        except grpc.RpcError as err:
+            logging.info(f"Error={err.details()}")
+            raise HTTPException(status_code=500, detail=err.details())
 
 @app.get('/groups/{group_id}')
 def get_group(group_id: str):

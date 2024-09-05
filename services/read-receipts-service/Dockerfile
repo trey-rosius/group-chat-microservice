@@ -12,13 +12,13 @@ FROM --platform=linux/amd64 python:${PYTHON_VERSION}-slim as base
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
 
-ENV  DAPR_API_TOKEN=diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/216976/chat-app/read-receipts-service/365cd942-3d0e-454d-a707-6c5a91357083
+ENV DAPR_API_TOKEN=diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/240898/group-chat-microservice/read-receipts-service/28fd7cba-cf02-4abf-bc38-9974d4eb223c
 ENV DAPR_APP_ID=read-receipts-service
-ENV DAPR_READ_RECEIPTS_TABLE="read-receipts-table"
+ENV DAPR_READ_RECEIPTS_TABLE=read-receipts-service-table
 ENV  DAPR_GROUP_SUBSCRIPTION_TOPIC=group-subscription-topic
 ENV DAPR_CLIENT_TIMEOUT_SECONDS=10
-ENV DAPR_GRPC_ENDPOINT=https://grpc-prj216976.api.cloud.diagrid.io:443
-ENV  DAPR_HTTP_ENDPOINT=https://http-prj216976.api.cloud.diagrid.io
+ENV DAPR_GRPC_ENDPOINT=https://grpc-prj240898.api.cloud.diagrid.io:443
+ENV DAPR_HTTP_ENDPOINT=https://http-prj240898.api.cloud.diagrid.io
 
 # Keeps Python from buffering stdout and stderr to avoid situations where
 # the application crashes without emitting any logs due to buffering.
