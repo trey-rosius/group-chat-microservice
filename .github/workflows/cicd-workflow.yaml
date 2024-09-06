@@ -91,7 +91,6 @@ jobs:
             echo "::set-output name=alb_dns::$alb_dns"
             diagrid appid update $service \
             --app-endpoint "http://group-service-ALB-55079206.us-east-1.elb.amazonaws.com" \
-            -w \
             --api-key ${{ secrets.DIAGRID_API_KEY }} \
             --project ${{ secrets.DIAGRID_PROJECT }}
           done
