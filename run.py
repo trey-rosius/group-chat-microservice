@@ -100,22 +100,22 @@ def create_appid(project_name, appid_name):
             sys.exit(1)
 
 
-def create_connections(project_name, connection_name, connection_type, scope,
-                       table_name=None):
-    with yaspin(text=f"Creating connection {connection_name}...", timer=True) as spinner:
+def create_component(project_name, component_name, component_type, scope,
+                     table_name=None):
+    with yaspin(text=f"Creating component {component_name}...", timer=True) as spinner:
         try:
             CONNECTION_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
             CONNECTION_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
             AWS_DEFAULT_REGION = os.getenv('AWS_DEFAULT_REGION')
-            if connection_type == "pubsub":
+            if component_type == "pubsub":
                 run_command(
-                    f"diagrid connection create {connection_name} --type pubsub.aws.snssqs --metadata accessKey={CONNECTION_ACCESS_KEY} --metadata secretKey={CONNECTION_SECRET_KEY} --metadata awsRegion={AWS_DEFAULT_REGION} --project {project_name}"
+                    f"diagrid component create {component_name} --type pubsub.aws.snssqs --metadata accessKey={CONNECTION_ACCESS_KEY} --metadata secretKey={CONNECTION_SECRET_KEY} --metadata awsRegion={AWS_DEFAULT_REGION} --project {project_name}"
                 )
                 time.sleep(35)
                 spinner.ok("✅")
             else:
                 run_command(
-                    f"diagrid connection create {connection_name} --type state.aws.dynamodb --metadata accessKey={CONNECTION_ACCESS_KEY} --metadata secretKey={CONNECTION_SECRET_KEY} --metadata awsRegion={AWS_DEFAULT_REGION} --metadata table={table_name} --scopes {scope} --project {project_name}",
+                    f"diagrid component create {component_name} --type state.aws.dynamodb --metadata accessKey={CONNECTION_ACCESS_KEY} --metadata secretKey={CONNECTION_SECRET_KEY} --metadata awsRegion={AWS_DEFAULT_REGION} --metadata table={table_name} --scopes {scope} --project {project_name}",
                     check=True)
                 spinner.ok("✅")
 
@@ -192,14 +192,11 @@ def set_default_project(project_name):
 
 def retrieve_folder_names() -> []:
     services = []
-    scopes = ''
     for folder_name in os.listdir(services_dir):
         folder_path = os.path.join(services_dir, folder_name)
         if os.path.isdir(folder_path):  # Check if it's a directory
             print(f"folder name is {folder_name}")
             services.append(folder_name)
-
-
 
         else:
             print(f"directory does not exist: {folder_path}")
@@ -233,8 +230,7 @@ def scaffold_and_update_config(config_file):
 
 
 def main():
-    # prj_name = os.getenv('group-chat-microservice')
-    prj_name = "group-chat-microservices"
+    prj_name = os.getenv('GROUP_CHAT_MICROSERVICES')
 
     config_file_name = f"dev-{prj_name}.yaml"
     os.environ['CONFIG_FILE'] = config_file_name
@@ -270,24 +266,24 @@ def main():
         check_appid_status(project_name, service_name)
 
     # CREATE PUBSUB CONNECTION
-    connection_type = "pubsub"
-    connection_name = "aws-pubsub"
+    component_type = "pubsub"
+    component_name = "aws-pubsub"
 
     scopes = ', '.join(f'"{service_name}"' for service_name in service_name_list)
     print(f"scopes are {scopes}")
 
-    create_connections(prj_name, connection_name, connection_type, scopes,
-                       )
+    create_component(prj_name, component_name, component_type, scopes,
+                     )
 
     # CREATE STATE CONNECTION
     for service_name in service_name_list:
-        connection_name = f"{service_name}-table"
-        connection_type = "state"
+        component_name = f"{service_name}-table"
+        component_type = "state"
         scope = service_name
         table_name = f"{service_name}-table"
 
-        create_connections(prj_name, connection_name, connection_type, scope,
-                           table_name)
+        create_component(prj_name, component_name, component_type, scope,
+                         table_name)
 
     subscription_name = "group-subscription-topic"
 
