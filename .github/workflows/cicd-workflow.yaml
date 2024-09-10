@@ -25,6 +25,9 @@ jobs:
       - name: Log Into Diagrid
         run: |
           diagrid login --api-key {{secret.DIAGRID_API_KEY}}
+      - name: Set default Diagrid Project
+        run: |
+          diagrid project use group-chat-microservice
       - name: Install other dependencies
         run: |
           npm install
@@ -88,7 +91,7 @@ jobs:
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
-            diagrid appid update user-service  --app-endpoint "http://user-service-ALB-835517443.us-east-2.elb.amazonaws.com"  --project kv-project-fbe8f200-4
+            diagrid appid update user-service  --app-endpoint http://user-service-ALB-835517443.us-east-2.elb.amazonaws.com
            
           done
 
