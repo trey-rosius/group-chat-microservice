@@ -5,13 +5,11 @@ on:
     branches:
         - main
 env:
-  AWS_REGION: "us-east-1"
-  PROJECT_NAME: "kv-project-fbe8f200-4"
+  AWS_REGION: us-east-1
+  PROJECT_NAME: kv-project-fbe8f200-4
 jobs:
   run-cicd:
     runs-on: ubuntu-latest
-
-
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
