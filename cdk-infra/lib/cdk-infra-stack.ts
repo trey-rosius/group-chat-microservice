@@ -16,6 +16,7 @@ export class CdkInfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    this.node.tryGetContext("asds");
     const servicesPorts: ServicePort[] = [
       new ServicePort("message-service", 5001),
       new ServicePort("group-service", 5002),
@@ -100,6 +101,7 @@ export class CdkInfraStack extends cdk.Stack {
         `${service.name}-container`,
         {
           image: ecs.ContainerImage.fromEcrRepository(serviceRepo, "latest"),
+
           logging: ecs.LogDrivers.awsLogs({
             streamPrefix: `${service.name}-stream`,
             logRetention: logs.RetentionDays.ONE_DAY,
@@ -121,11 +123,9 @@ export class CdkInfraStack extends cdk.Stack {
             cluster: cluster, // Required
             cpu: 256, // can be >= 256
             serviceName: `${service.name}`,
-
             loadBalancerName: `${service.name}-ALB`,
             desiredCount: 2, // Default is 1
             taskDefinition: task_definition,
-
             listenerPort: 80,
             memoryLimitMiB: 512, // can be >= 512
             publicLoadBalancer: true, // can be set to false

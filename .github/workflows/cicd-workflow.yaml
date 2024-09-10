@@ -8,6 +8,9 @@ on:
 jobs:
   run-cicd:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: "us-east-1"
+      PROJECT_NAME: "kv-project-fbe8f200-4"
 
     steps:
       - name: Checkout the repo
@@ -22,10 +25,10 @@ jobs:
           # Download the latest Diagrid CLI from GitHub or direct source
           curl -o- https://downloads.diagrid.io/cli/install.sh | bash
           sudo mv ./diagrid /usr/local/bin
-      # Test Diagrid command
-      - name: Run Diagrid Version Command
+      # Log into diagrid
+      - name: Log Into Diagrid
         run: |
-          diagrid -h
+          diagrid login --api-key {{secret.DIAGRID_API_KEY}}
       - name: Install other dependencies
         run: |
           npm install
@@ -35,7 +38,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
+          aws-region: $AWS_REGION
       - name: Synthesize CDK Stack
         run: cdk synth
         working-directory: ./cdk-infra
@@ -52,7 +55,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: $AWS_REGION
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -62,7 +65,7 @@ jobs:
         run: |
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
-            ecr_repo="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/$service_name"
+            ecr_repo="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$service_name"
             echo "Building Docker image for $service_name"
             docker build -t "$ecr_repo:latest" "$service"
             echo "Pushing Docker image to ECR for $service_name"
@@ -89,6 +92,7 @@ jobs:
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
+            diagrid appid update $service  --app-endpoint "http://$alb_dns"   --project $PROJECT_NAME
            
           done
 
