@@ -27,7 +27,7 @@ jobs:
           diagrid login --api-key {{secrets.DIAGRID_API_KEY}}
       - name: Set default Diagrid Project
         run: |
-          diagrid project use group-chat-microservice --api-key {{secrets.DIAGRID_API_KEY}}
+          diagrid project use group-chat-microservice
       - name: Install other dependencies
         run: |
           npm install
