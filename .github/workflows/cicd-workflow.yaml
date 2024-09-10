@@ -21,6 +21,10 @@ jobs:
           # Download the latest Diagrid CLI from GitHub or direct source
           curl -o- https://downloads.diagrid.io/cli/install.sh | bash
           sudo mv ./diagrid /usr/local/bin
+      # Logout of diagrid
+      - name: Logout Into Diagrid
+        run: |
+          diagrid logout
       # Log into diagrid
       - name: Log Into Diagrid
         run: |
