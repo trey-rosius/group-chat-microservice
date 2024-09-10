@@ -24,7 +24,7 @@ jobs:
       # Log into diagrid
       - name: Log Into Diagrid
         run: |
-          diagrid login
+          diagrid login --api-key {{secrets.DIAGRID_API_KEY}}
       - name: Set default Diagrid Project
         run: |
           diagrid project use group-chat-microservice --api-key {{secrets.DIAGRID_API_KEY}}
