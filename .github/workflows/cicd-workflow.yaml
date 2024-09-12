@@ -21,10 +21,6 @@ jobs:
           # Download the latest Diagrid CLI from GitHub or direct source
           curl -o- https://downloads.diagrid.io/cli/install.sh | bash
           sudo mv ./diagrid /usr/local/bin
-      # Logout of diagrid
-      - name: Logout Into Diagrid
-        run: |
-          diagrid logout
       # Log into diagrid
       - name: Log Into Diagrid
         run: |
@@ -95,7 +91,6 @@ jobs:
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
-            diagrid appid update user-service  --app-endpoint http://user-service-ALB-835517443.us-east-2.elb.amazonaws.com
            
           done
 

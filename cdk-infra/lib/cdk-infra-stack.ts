@@ -16,7 +16,6 @@ export class CdkInfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.node.tryGetContext("asds");
     const servicesPorts: ServicePort[] = [
       new ServicePort("message-service", 5001),
       new ServicePort("group-service", 5002),
