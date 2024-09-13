@@ -83,6 +83,8 @@ jobs:
     needs: run-diagrid-cmd
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
       # Download the service_tokens.json artifact
       - name: Download service_tokens.json
         uses: actions/download-artifact@v3
@@ -91,7 +93,7 @@ jobs:
       - name: Install other dependencies
         run: |
           npm install
-        working-directory: ../cdk-infra
+        working-directory: ./cdk-infra
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -109,9 +111,11 @@ jobs:
         working-directory: ./cdk-infra
       - name: Bootstrap CDK Stack
         run: |
-          json_array="${{ steps.create_app_token_json.service_tokens }}"
+          json_array=$(cat service_tokens.json)
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
+          echo "Final JSON Array:"
+          cat service_tokens.json
           cdk bootstrap -c configfile=service_tokens.json
         working-directory: ./cdk-infra
 
@@ -144,9 +148,11 @@ jobs:
 
       - name: Deploy CdkInfraStack to AWS
         run: |
-          json_array="${{ steps.create_app_token_json.service_tokens }}"
+          json_array=$(cat service_tokens.json)
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
+          echo "Final JSON Array:"
+          cat service_tokens.json
           cdk deploy CdkInfraStack --require-approval=never -c configfile=service_tokens.json
         working-directory: ./cdk-infra
 
