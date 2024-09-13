@@ -81,13 +81,6 @@ jobs:
         with:
           name: service_tokens
           path: cdk-infra/service_tokens.json
-  run-cicd:
-    needs: run-diagrid-cmd
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v3
-
       - name: Install other dependencies
         run: |
           npm install
@@ -128,3 +121,4 @@ jobs:
       - name: Deploy repoStackName to AWS
         run: cdk deploy repoStackName --require-approval=never
         working-directory: ./cdk-infra
+
