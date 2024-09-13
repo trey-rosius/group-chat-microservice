@@ -73,6 +73,8 @@ jobs:
           echo "service_tokens<<$EOF" >> $GITHUB_OUTPUT
           echo "$json_array" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
+          
+          cat service_tokens.json
 
       # Step 3: Upload service_tokens.json as an artifact
       - name: Upload service_tokens.json
