@@ -80,6 +80,7 @@ jobs:
 
           
   run-cicd:
+    needs: run-diagrid-cmd
     runs-on: ubuntu-latest
     steps:
       # Download the service_tokens.json artifact
