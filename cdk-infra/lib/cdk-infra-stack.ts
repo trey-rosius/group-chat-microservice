@@ -8,32 +8,19 @@ import * as ecr from "aws-cdk-lib/aws-ecr";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { HttpAlbIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
-
-import { ServicePort } from "./service-port";
+import { readFileSync } from "fs";
+import { ServiceApiToken } from "./service-api-token";
 
 export class CdkInfraStack extends cdk.Stack {
   PREFIX = "GROUP-CHAT";
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const envContext: string | undefined = this.node.tryGetContext("env");
 
-    const envVar: [{
-      "service":"user-service",
-      "app_id":"asdasd"
-    },{
-      "service":"user-service",
-      "app_id":"asdasd"
-    }] = JSON.parse(envContext!);
-
-    const servicesPorts: ServicePort[] = [
-      new ServicePort("message-service", 5001),
-      new ServicePort("group-service", 5002),
-      new ServicePort("typing-indicator-service", 5003),
-      new ServicePort("user-group-service", 5004),
-      new ServicePort("read-receipts-service", 5005),
-      new ServicePort("user-service", 5006),
-    ];
-
+    // Get file name from context and parse JSON
+    const inputFile = this.node.tryGetContext("configfile");
+    const envVar: [ServiceApiToken] = JSON.parse(
+      readFileSync(inputFile).toString()
+    );
     const vpc = new ec2.Vpc(this, "EdaVpc", {
       ipAddresses: ec2.IpAddresses.cidr("10.0.0.0/16"),
       maxAzs: 2, // Default is all AZs in region
@@ -85,16 +72,16 @@ export class CdkInfraStack extends cdk.Stack {
       clusterName: `${this.PREFIX}-cluster`,
     });
 
-    const deployService = async (service: ServicePort) => {
+    const deployService = async (service: ServiceApiToken) => {
       const serviceRepo = ecr.Repository.fromRepositoryName(
         this,
-        `${service.name}-RepositoryService`,
-        `${service.name}`
+        `${service.service}-RepositoryService`,
+        `${service.service}`
       );
 
       const task_definition = new ecs.FargateTaskDefinition(
         this,
-        `${service.name}-Task-def`,
+        `${service.service}-Task-def`,
         {
           cpu: 256,
           memoryLimitMiB: 512,
@@ -106,22 +93,33 @@ export class CdkInfraStack extends cdk.Stack {
       );
 
       const container = task_definition.addContainer(
-        `${service.name}-container`,
+        `${service.service}-container`,
         {
           image: ecs.ContainerImage.fromEcrRepository(serviceRepo, "latest"),
           environment: {
-            DAPR_APP_ID: envVar[service.name].
+            DAPR_APP_ID: service.apiToken,
           },
 
           logging: ecs.LogDrivers.awsLogs({
-            streamPrefix: `${service.name}-stream`,
+            streamPrefix: `${service.service}-stream`,
             logRetention: logs.RetentionDays.ONE_DAY,
           }),
         }
       );
 
       container.addPortMappings({
-        containerPort: service.port,
+        containerPort:
+          service.service == "user-service"
+            ? 5006
+            : service.service == "group-service"
+            ? 5002
+            : service.service == "message-service"
+            ? 5001
+            : service.service == "read-receipts-service"
+            ? 5005
+            : service.service == "typing-indicator-service"
+            ? 5003
+            : 5004,
         protocol: ecs.Protocol.TCP,
       });
 
@@ -129,12 +127,12 @@ export class CdkInfraStack extends cdk.Stack {
       const fargateService =
         new ecs_patterns.ApplicationLoadBalancedFargateService(
           this,
-          `${service.name}-fargateService`,
+          `${service.service}-fargateService`,
           {
             cluster: cluster, // Required
             cpu: 256, // can be >= 256
-            serviceName: `${service.name}`,
-            loadBalancerName: `${service.name}-ALB`,
+            serviceName: `${service.service}`,
+            loadBalancerName: `${service.service}-ALB`,
             desiredCount: 2, // Default is 1
             taskDefinition: task_definition,
             listenerPort: 80,
@@ -159,22 +157,22 @@ export class CdkInfraStack extends cdk.Stack {
         path: "/",
       });
 
-      const httpApi = new apigw2.HttpApi(this, `${service.name}-HttpApi`, {
-        apiName: `${service.name}-api`,
+      const httpApi = new apigw2.HttpApi(this, `${service.service}-HttpApi`, {
+        apiName: `${service.service}-api`,
       });
 
       httpApi.addRoutes({
         path: "/",
         methods: [apigw2.HttpMethod.GET],
         integration: new HttpAlbIntegration(
-          `${service.name}-AlbIntegration`,
+          `${service.service}-AlbIntegration`,
           fargateService.listener
         ),
       });
     };
 
     const deployAllServices = async () => {
-      for (const service of servicesPorts) {
+      for (const service of envVar) {
         await deployService(service);
       }
     };
