@@ -29,12 +29,9 @@ jobs:
       - name: Diagrid Version
         run: |
           diagrid version
-      # Assign Diagrid Project
-      - name: Assign Diagrid Project
-        run: |
-          diagrid project use group-chat-microservice --api-key ${{secrets.DIAGRID_API_KEY}}
-      - name: Retrieve apiToken for each service
 
+      - name: Retrieve apiToken for each service
+        id: create_app_token_json
         run: |
           # Initialize an empty array for the final output
           json_array="[]"
