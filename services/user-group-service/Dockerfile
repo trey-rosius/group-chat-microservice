@@ -11,8 +11,6 @@ FROM --platform=linux/amd64 python:${PYTHON_VERSION}-slim as base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
-
-ENV  DAPR_API_TOKEN=diagrid://v1/a657cb15-9aa6-4bfd-b3c6-61e76a173cfb/240898/group-chat-microservice/user-group-service/15d473dc-20d5-4489-9af8-6695a10a6e6b
 ENV DAPR_APP_ID=user-group-service
 ENV DAPR_AWS_PUB_SUB_BROKER=aws-pubsub
 ENV DAPR_USER_GROUPS_TABLE=user-group-service-table
