@@ -33,8 +33,7 @@ jobs:
       - name: Assign Diagrid Project
         run: |
           diagrid project use group-chat-microservice --api-key ${{secrets.DIAGRID_API_KEY}}
-
-      #Retrieve apiTokens for all project services
+      # Retrieve apiTokens for all project services
       - name: Retrieve apiToken for each service
         id: create_app_token_json
         run: |
