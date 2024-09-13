@@ -25,6 +25,10 @@ jobs:
       - name: Log Into Diagrid
         run: |
           diagrid login --api-key {{secrets.DIAGRID_API_KEY}}
+      # Diagrid Version
+      - name: Diagrid Version
+        run: |
+          diagrid version
       # Assign Diagrid Project
       - name: Assign Diagrid Project
         run: |
