@@ -74,7 +74,7 @@ jobs:
       - name: Upload service_tokens.json
         uses: actions/upload-artifact@v3
         with:
-          name: service-tokens
+          name: service_tokens
           path: service_tokens.json
 
 
@@ -96,10 +96,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       # Download the service_tokens.json artifact
-      - name: Synthesize CDK Stack and Download service_tokens.json
+      - name: Download service_tokens.json
         uses: actions/download-artifact@v3
         with:
-          name: service-tokens
+          name: service_tokens
+      - name: Synthesize CDK Stack
         run: |
           json_array=$(cat service_tokens.json)
           # Save the JSON array to a file
