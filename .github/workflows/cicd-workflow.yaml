@@ -75,7 +75,7 @@ jobs:
           echo "$EOF" >> $GITHUB_OUTPUT
           
           cat service_tokens.json
-      # Step 3: Upload service_tokens.json as an artifact
+
       - name: Upload service_tokens.json
         uses: actions/upload-artifact@v4
         with:
@@ -107,8 +107,6 @@ jobs:
         uses: download-artifact@v4
         with:
           name: service_tokens
-      - name: Checkout the repo
-        uses: actions/checkout@v3
       - name: Synthesize CDK Stack
         run: |
           json_array=$(cat service_tokens.json)
@@ -131,13 +129,6 @@ jobs:
       - name: Deploy repoStackName to AWS
         run: cdk deploy repoStackName --require-approval=never
         working-directory: ./cdk-infra
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr
