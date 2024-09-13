@@ -125,7 +125,6 @@ jobs:
           echo $json_array | jq . > service_tokens.json
           echo "Final JSON Array:"
           cat service_tokens.json
-          cdk bootstrap -c configfile=service_tokens.json
-          cdk deploy repoStackName --require-approval=never
+          cdk deploy repoStackName --require-approval=never -c configfile=service_tokens.json
         working-directory: ./cdk-infra
 
