@@ -118,7 +118,7 @@ jobs:
           echo "JSON Array:"
           cat alb_services.json
       # Loop through the JSON array and extract values
-      - name: Loop through the JSON array and extract ALB DNS
+      - name: Loop through the JSON array and extract ALB DNS and Service name,update Catalyst API public Endpoint for each service
         run: |
           # Read the JSON array from the file
           json_array=$(cat alb_services.json)
@@ -131,6 +131,7 @@ jobs:
       
               service=$(_jq '.Service')
               alb_dns=$(_jq '.Alb')
+              diagrid appid update $service --app-endpoint "http://$alb_dns" -w --api-key ${{secrets.DIAGRID_API_KEY}}
       
               echo "Service: $service, ALB DNS: $alb_dns"
           done
