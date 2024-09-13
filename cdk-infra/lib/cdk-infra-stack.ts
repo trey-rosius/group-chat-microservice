@@ -97,7 +97,7 @@ export class CdkInfraStack extends cdk.Stack {
         {
           image: ecs.ContainerImage.fromEcrRepository(serviceRepo, "latest"),
           environment: {
-            DAPR_APP_ID: service.apiToken,
+            DAPR_API_TOKEN: service.apiToken,
           },
 
           logging: ecs.LogDrivers.awsLogs({
