@@ -98,10 +98,11 @@ jobs:
             alb_name=$(basename "$service")-ALB
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
+            echo "Service name is : $service_name"
             echo "::set-output name=alb_dns::$alb_dns"
           
-            # Create a JSON object with the service name and ALB DNS
-            json_object=$(jq -n --arg service "$service_name" --arg alb_dns "$alb_dns" \
+            # Create a JSON object with the service and ALB DNS
+            json_object=$(jq -n --arg service_name "$service_name" --arg alb_dns "$alb_dns" \
                           '{Service: $service_name, Alb: $alb_dns}')
             
             # Add the JSON object to the array
