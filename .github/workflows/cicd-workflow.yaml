@@ -102,7 +102,7 @@ jobs:
         run: |
           cat service_tokens.json
           cdk synth -c configfile=service_tokens.json
-        working-directory: ./cdk-infra
+        
           
   run-cicd:
     needs: run-diagrid-cmd
