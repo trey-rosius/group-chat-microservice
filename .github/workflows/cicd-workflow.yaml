@@ -33,6 +33,8 @@ jobs:
       - name: Assign Diagrid Project
         run: |
           diagrid project use group-chat-microservice --api-key ${{secrets.DIAGRID_API_KEY}}
+
+      #Retrieve apiTokens for all project services
       - name: Retrieve apiToken for each service
         id: create_app_token_json
         run: |
@@ -66,8 +68,9 @@ jobs:
           done
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
-          
-
+        
+          # Set JSON array as GitHub Action output using GITHUB_OUTPUT
+          echo "service_tokens=$json_array" >> $GITHUB_OUTPUT
       - name: Install other dependencies
         run: |
           npm install
@@ -80,7 +83,7 @@ jobs:
           aws-region: us-east-1
       - name: Synthesize CDK Stack
         run: |
-          json_array=[]
+          json_array="${{ steps.create_app_token_json.service_tokens }}"
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
           echo "Final JSON Array:"
@@ -89,7 +92,7 @@ jobs:
         working-directory: ./cdk-infra
       - name: Bootstrap CDK Stack
         run: |
-          json_array=[]
+          json_array="${{ steps.create_app_token_json.service_tokens }}"
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
           cdk bootstrap -c configfile=service_tokens.json
@@ -124,7 +127,7 @@ jobs:
 
       - name: Deploy CdkInfraStack to AWS
         run: |
-          json_array=[]
+          json_array="${{ steps.create_app_token_json.service_tokens }}"
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
           cdk deploy CdkInfraStack --require-approval=never -c configfile=service_tokens.json
