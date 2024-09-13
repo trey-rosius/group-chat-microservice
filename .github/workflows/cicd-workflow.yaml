@@ -69,6 +69,10 @@ jobs:
           
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "service_tokens<<$EOF" >> $GITHUB_OUTPUT
+          echo "$json_array" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
 
       # Step 3: Upload service_tokens.json as an artifact
       - name: Upload service_tokens.json
