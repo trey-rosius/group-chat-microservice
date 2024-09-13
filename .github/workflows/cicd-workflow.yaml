@@ -75,34 +75,15 @@ jobs:
           echo "$EOF" >> $GITHUB_OUTPUT
           
           cat service_tokens.json
-      - name: service token
-        run: |
-          cat service_tokens.json
-
       # Step 3: Upload service_tokens.json as an artifact
       - name: Upload service_tokens.json
         uses: actions/upload-artifact@v4
         with:
           name: service_tokens
-          path: service_tokens.json
+          path: ../cdk_infra/service_tokens.json
 
-      - name: Install other dependencies
-        run: |
-          npm install
-        working-directory: ./cdk-infra
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
 
-      - name: Synthesize CDK Stack
-        run: |
-          cat service_tokens.json
-          cdk synth -c configfile=service_tokens.json
-        
           
   run-cicd:
     needs: run-diagrid-cmd
