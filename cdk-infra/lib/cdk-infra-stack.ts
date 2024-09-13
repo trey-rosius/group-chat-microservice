@@ -15,6 +15,15 @@ export class CdkInfraStack extends cdk.Stack {
   PREFIX = "GROUP-CHAT";
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+    const envContext: string | undefined = this.node.tryGetContext("env");
+
+    const envVar: [{
+      "service":"user-service",
+      "app_id":"asdasd"
+    },{
+      "service":"user-service",
+      "app_id":"asdasd"
+    }] = JSON.parse(envContext!);
 
     const servicesPorts: ServicePort[] = [
       new ServicePort("message-service", 5001),
@@ -100,6 +109,9 @@ export class CdkInfraStack extends cdk.Stack {
         `${service.name}-container`,
         {
           image: ecs.ContainerImage.fromEcrRepository(serviceRepo, "latest"),
+          environment: {
+            DAPR_APP_ID: envVar[service.name].
+          },
 
           logging: ecs.LogDrivers.awsLogs({
             streamPrefix: `${service.name}-stream`,
