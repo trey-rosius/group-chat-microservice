@@ -110,15 +110,17 @@ jobs:
           name: service_tokens
       - name: List Artifact Contents
         run: ls -R
+      - name: Checkout the repo
+        uses: actions/checkout@v3
       - name: Synthesize CDK Stack
 
         run: |
-          json_array=$(cat service_tokens)
+          json_array=$(cat service_tokens.json)
           # Save the JSON array to a file
-          echo $json_array | jq . > service_tokens
+          echo $json_array | jq . > tokens.json
           echo "Final JSON Array:"
-          cat service_tokens.json
-          cdk synth -c configfile=service_tokens.json
+          cat tokens.json
+          cdk synth -c configfile=tokens.json
         working-directory: ./cdk-infra
       - name: Bootstrap CDK Stack
         run: |
