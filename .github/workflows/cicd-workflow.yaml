@@ -172,7 +172,11 @@ jobs:
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "Service name is : $service_name"
-            echo "alb_dns::$alb_dns" >> $GITHUB_OUTPUT
+         
+            EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+            echo "alb_dns<<$EOF" >> $GITHUB_OUTPUT
+            echo "$alb_dns" >> $GITHUB_OUTPUT
+            echo "$EOF" >> $GITHUB_OUTPUT
           
           
             # Create a JSON object with the service and ALB DNS
