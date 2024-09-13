@@ -91,16 +91,46 @@ jobs:
 
       - name: Retrieving the DNS for the services and updating the appIDs
         run: |
+          # Initialize an empty array
+          json_array="[]"
           for service in ./services/*/ ; do
             alb_name=$(basename "$service")-ALB
             alb_dns=$(aws elbv2 describe-load-balancers --names $alb_name --query "LoadBalancers[0].DNSName" --output text)
             echo "ALB DNS: $alb_dns"
             echo "::set-output name=alb_dns::$alb_dns"
+          
+            # Create a JSON object with the service and ALB DNS
+            json_object=$(jq -n --arg service "$service" --arg alb_dns "$alb_dns" \
+                          '{Service: $service, Alb: $alb_dns}')
+            
+            # Add the JSON object to the array
+            json_array=$(echo $json_array | jq --argjson obj "$json_object" '. += [$obj]')
+      
+          
            
           done
-      - name: set group-service url
-        run: |
-           diagrid appid update group-service --app-endpoint http://group-service-ALB-55079206.us-east-1.elb.amazonaws.com -w --api-key ${{secrets.DIAGRID_API_KEY}}
+          # Save the JSON array to a file
+          echo $json_array | jq . > alb_services.json
 
+          # Output the JSON array
+          echo "JSON Array:"
+          cat alb_services.json
+      # Loop through the JSON array and extract values
+      - name: Loop through the JSON array and extract ALB DNS
+        run: |
+          # Read the JSON array from the file
+          json_array=$(cat alb_services.json)
+      
+          # Loop through the array and extract service and alb_dns
+          for row in $(echo "${json_array}" | jq -r '.[] | @base64'); do
+              _jq() {
+                echo ${row} | base64 --decode | jq -r ${1}
+              }
+      
+              service=$(_jq '.Service')
+              alb_dns=$(_jq '.Alb')
+      
+              echo "Service: $service, ALB DNS: $alb_dns"
+          done
 
           
