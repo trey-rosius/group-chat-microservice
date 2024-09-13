@@ -108,6 +108,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: service_tokens
+      - name: List Artifact Contents
+        run: ls -R
       - name: Synthesize CDK Stack
 
         run: |
