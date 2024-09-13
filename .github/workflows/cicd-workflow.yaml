@@ -72,8 +72,10 @@ jobs:
           
           echo "Final JSON Array:"
           cat service_tokens.json
-          encoded_json=$(cat service_tokens.json | base64)
-          echo "service_tokens=$encoded_json" >> $GITHUB_OUTPUT
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "service_tokens<<$EOF" >> $GITHUB_OUTPUT
+          echo "$json_array" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Install other dependencies
         run: |
