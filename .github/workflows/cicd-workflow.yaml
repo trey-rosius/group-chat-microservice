@@ -74,10 +74,10 @@ jobs:
           echo "$json_array" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
           
-          cat service_tokens.json
+          cat cdk-infra/service_tokens.json
 
       - name: Upload service_tokens.json
         uses: actions/upload-artifact@v4
         with:
           name: service_tokens
-          path: service_tokens.json
+          path: cdk-infra/service_tokens.json
