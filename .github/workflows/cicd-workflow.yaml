@@ -64,9 +64,10 @@ jobs:
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
             table_name="${service_name}-table"
-            sleep 10
+            
             diagrid component create $table_name --type state.aws.dynamodb --metadata accessKey=${{ secrets.AWS_ACCESS_KEY_ID }} --metadata secretKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} --metadata awsRegion=${{ secrets.AWS_DEFAULT_REGION }} --metadata table=$table_name --scopes $service_name --project ${{secrets.DIAGRID_PROJECT}}
-         done
+            sleep 10
+          done
       - name: Creating subscriptions
         run: |
           cat ./group_subs.yaml
