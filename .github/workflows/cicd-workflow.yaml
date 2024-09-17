@@ -58,15 +58,15 @@ jobs:
           echo "JSON Array:"
           cat alb_services.json
           
-      # List all `.json` files in all subdirectories
-      - name: Find all `.json` files
-        run: |
-          for file in **/*.json; do
-            echo "Found JSON file: $file"
-          done
+      # Download the service_tokens.json artifact
+      - name: Download service_tokens.json
+        uses: actions/download-artifact@v4
+        with:
+          name: service_tokens
+          path: cdk-graphql-stack/
       - name: Synthesize CdkGroupChatMicroserviceStack
         run: |
-          json_array=$(cat ./alb_services.json)
+          json_array=$(cat alb_services.json)
           # Save the JSON array to a file
           echo $json_array | jq . > tokens.json
           echo "Final JSON Array:"
@@ -75,7 +75,7 @@ jobs:
         working-directory: ./cdk-graphql-stack
       - name: Bootstrap CDK Stack
         run: |
-          json_array=$(cat ./alb_services.json)
+          json_array=$(cat alb_services.json)
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
           echo "Final JSON Array:"
@@ -85,7 +85,7 @@ jobs:
 
       - name: Deploy CdkGroupChatMicroserviceStack to AWS
         run: |
-          json_array=$(cat ./service_tokens.json)
+          json_array=$(cat service_tokens.json)
           # Save the JSON array to a file
           echo $json_array | jq . > service_tokens.json
           echo "Final JSON Array:"
