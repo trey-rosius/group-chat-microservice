@@ -69,6 +69,6 @@ jobs:
       - name: Creating subscriptions
         run: |
           cat ./group_subs.yaml
-          diagrid subscriptions apply --wait --file ./group_subs.yaml
+          diagrid subscriptions apply --wait --file ./group_subs.yaml --project ${{secrets.DIAGRID_PROJECT}}
           
 
