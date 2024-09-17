@@ -37,3 +37,13 @@ healthchecksdb
 Generated\ Files/
 
 diagrid-venv/
+cdk-graphql-stack/cdk.out/
+cdk-infra/cdk.out/
+
+!jest.config.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
