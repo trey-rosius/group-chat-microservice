@@ -25,6 +25,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Retrieving the DNS for the services and updating the appIDs
+        working-directory: ./cdk-graphql-stack
         run: |
           # Initialize an empty array
           json_array="[]"
@@ -58,7 +59,7 @@ jobs:
           echo "JSON Array:"
           cat alb_services.json
           
-          cdk deploy CdkGroupChatMicroserviceStack --require-approval=never -c configfile=alb_services.json
+
       - name: Synthesize CdkGroupChatMicroserviceStack
         run: |
           json_array=$(cat alb_services.json)
