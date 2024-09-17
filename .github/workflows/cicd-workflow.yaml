@@ -178,7 +178,7 @@ jobs:
   
             # Create a JSON object with the service and ALB DNS
             json_object=$(jq -n --arg service "$service_name" --arg alb_dns "$alb_dns" \
-                          '{Service: $service, Alb: $alb_dns}')
+                          '{service: $service, url: $alb_dns}')
   
             # Add the JSON object to the array
             json_array=$(echo $json_array | jq --argjson obj "$json_object" '. += [$obj]')
@@ -206,13 +206,17 @@ jobs:
                 echo ${row} | base64 --decode | jq -r ${1}
               }
   
-              service=$(_jq '.Service')
-              alb_dns=$(_jq '.Alb')
+              service=$(_jq '.service')
+              alb_dns=$(_jq '.url')
               diagrid appid update $service --app-endpoint "http://$alb_dns" -w --api-key ${{secrets.DIAGRID_API_KEY}}
   
               echo "Service: $service, ALB DNS: $alb_dns"
           done
-    
+      - name: Upload alb_tokens.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: alb_services
+          path: cdk-graphql-stack/alb_services.json
 
   deploy-graphql-cdk-stack:
     runs-on: ubuntu-latest
@@ -273,11 +277,11 @@ jobs:
       - name: Download service_tokens.json
         uses: actions/download-artifact@v4
         with:
-          name: service_tokens
+          name: alb_services
           path: cdk-graphql-stack/
       - name: Synthesize CdkGroupChatMicroserviceStack
         run: |
-          json_array=$(cat service_tokens.json)
+          json_array=$(cat alb_services.json)
           # Save the JSON array to a file
           echo $json_array | jq . > tokens.json
           echo "Final JSON Array:"
@@ -286,20 +290,20 @@ jobs:
         working-directory: ./cdk-graphql-stack
       - name: Bootstrap CDK Stack
         run: |
-          json_array=$(cat service_tokens.json)
+          json_array=$(cat alb_services.json)
           # Save the JSON array to a file
-          echo $json_array | jq . > service_tokens.json
+         echo $json_array | jq . > tokens.json
           echo "Final JSON Array:"
-          cat service_tokens.json
-          cdk bootstrap -c configfile=service_tokens.json
+          cat tokens.json
+          cdk bootstrap -c configfile=tokens.json
         working-directory: ./cdk-graphql-stack
 
       - name: Deploy CdkGroupChatMicroserviceStack to AWS
         run: |
-          json_array=$(cat service_tokens.json)
+          json_array=$(cat alb_services.json)
           # Save the JSON array to a file
-          echo $json_array | jq . > service_tokens.json
+         echo $json_array | jq . > tokens.json
           echo "Final JSON Array:"
-          cat service_tokens.json
-          cdk deploy CdkGroupChatMicroserviceStack --require-approval=never -c configfile=service_tokens.json
+          cat tokens.json
+          cdk deploy CdkGroupChatMicroserviceStack --require-approval=never -c configfile=tokens.json
         working-directory: ./cdk-graphql-stack
