@@ -58,7 +58,12 @@ jobs:
           echo "JSON Array:"
           cat alb_services.json
           
-
+      # List all `.json` files in all subdirectories
+      - name: Find all `.json` files
+        run: |
+          for file in **/*.json; do
+            echo "Found JSON file: $file"
+          done
       - name: Synthesize CdkGroupChatMicroserviceStack
         run: |
           json_array=$(cat ./alb_services.json)
