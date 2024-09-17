@@ -46,8 +46,8 @@ jobs:
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
             echo "DynamoDB table name : ${service_name}-table"
-            table_name = "${service_name}-table"
-            aws dynamodb create-table --table-name "${service_name}-table" --attribute-definitions AttributeName=key,AttributeType=S --key-schema AttributeName=key,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+            table_name="${service_name}-table"
+            aws dynamodb create-table --table-name $table_name --attribute-definitions AttributeName=key,AttributeType=S --key-schema AttributeName=key,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
           done
       - name: Check App Status
         run: |
@@ -63,7 +63,7 @@ jobs:
         run: |
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
-            table_name = "${service_name}-table"
+            table_name="${service_name}-table"
             diagrid component create $table_name --type state.aws.dynamodb --metadata accessKey=${{ secrets.AWS_ACCESS_KEY_ID }} --metadata secretKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} --metadata awsRegion=${{ secrets.AWS_DEFAULT_REGION }} --metadata table=$table_name --scopes $service_name --project ${{secrets.DIAGRID_PROJECT}}
           done
       - name: Creating subscriptions
