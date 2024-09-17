@@ -1,0 +1,1188 @@
+{
+ "Resources": {
+  "groupchatapimicroserviceApiLogsRoleA76CCCA9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/ApiLogsRole/Resource"
+   }
+  },
+  "groupchatapimicroserviceC403847E": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "LogConfig": {
+     "CloudWatchLogsRoleArn": {
+      "Fn::GetAtt": [
+       "groupchatapimicroserviceApiLogsRoleA76CCCA9",
+       "Arn"
+      ]
+     },
+     "FieldLogLevel": "ALL"
+    },
+    "Name": "groupChatApiMicroservice",
+    "XrayEnabled": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/Resource"
+   }
+  },
+  "groupchatapimicroserviceSchema30CEC9E0": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "Definition": "schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\n\ntype Mutation {\n  createUserAccount(userInput: CreateUserInput!): User! @aws_api_key\n  createGroup(input: CreateGroupInput!): Group! @aws_api_key\n  addGroupParticipant(\n    group_id: String!\n    user_id: String!\n    role: String!\n  ): String! @aws_api_key\n  sendGroupMessage(input: CreateMessageInput!): Message! @aws_api_key\n  addTypingIndicator(input: CreateTypingInput!): Typing! @aws_api_key\n}\n\ntype Query {\n  getUserAccount(user_id: String!): User! @aws_api_key\n  getGroup(group_id: String!): Group! @aws_api_key\n  getGroupMessages(group_id: String!): GroupMessagesResult! @aws_api_key\n  getGroups(token: String, limit: Int!): GroupsResult! @aws_api_key\n  getUsers: UsersResult! @aws_api_key\n}\ntype Subscription {\n  onCreateMessages: Message\n    @aws_subscribe(mutations: [\"sendGroupMessage\"])\n    @aws_api_key\n\n  onAddingTypingIndicator: Typing\n    @aws_subscribe(mutations: [\"addTypingIndicator\"])\n    @aws_api_key\n}\ntype User @aws_api_key {\n  id: String!\n  username: String!\n  email: AWSEmail!\n  profile_pic_url: String\n  created_at: AWSTimestamp!\n  updated_at: AWSTimestamp\n}\n\ntype Group @aws_api_key {\n  id: String!\n  group_name: String!\n  creator_id: String!\n  group_description: String!\n  last_message: Message\n  group_url: String\n  created_at: AWSTimestamp!\n  members: [Member!]!\n  messages: [Message!]\n  updated_at: AWSTimestamp\n}\n\ntype GroupMessagesResult @aws_api_key {\n  items: [Message!]!\n}\ntype GroupsResult @aws_api_key {\n  items: [Group!]!\n}\n\ntype UsersResult @aws_api_key {\n  items: [User!]!\n}\n\ntype Message @aws_api_key {\n  id: String!\n  user_id: String!\n  group_id: String!\n  message_type: MESSAGETYPE!\n  message_content: String\n  image_url: String\n  video_url: String\n  created_at: AWSTimestamp!\n  updated_at: AWSTimestamp\n}\ninput CreateUserInput @aws_api_key {\n  username: String!\n  email: AWSEmail!\n  profile_pic_url: String\n}\n\ninput CreateMessageInput @aws_api_key {\n  user_id: String!\n  group_id: String!\n  message_type: MESSAGETYPE!\n  message_content: String\n  image_url: String\n  video_url: String\n}\n\ninput CreateGroupInput @aws_api_key {\n  group_name: String!\n  creator_id: String!\n  group_description: String!\n  group_url: String\n}\n\ntype Typing @aws_api_key {\n  id: String!\n  user_id: String!\n  group_id: String!\n  typing: Boolean!\n}\n\ninput CreateTypingInput @aws_api_key {\n  user_id: String!\n  group_id: String!\n  typing: Boolean!\n}\n\ntype Member @aws_api_key {\n  user_id: String!\n  role: ROLE!\n}\nenum ROLE {\n  ADMIN\n  MEMBER\n}\nenum MESSAGETYPE {\n  TEXT\n  IMAGE\n  VIDEO\n}\n"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/Schema"
+   }
+  },
+  "groupchatapimicroservicedefaultApiKey2A5B81A5": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "Description": "default auth mode",
+    "Expires": 1726743227
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/defaultApiKey"
+   }
+  },
+  "groupchatapimicroserviceLogRetention9A8748A2": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/appsync/apis/",
+       {
+        "Fn::GetAtt": [
+         "groupchatapimicroserviceC403847E",
+         "ApiId"
+        ]
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/LogRetention/Resource"
+   }
+  },
+  "groupchatapimicroserviceusersServiceServiceRole7F0C49B3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/ServiceRole/Resource"
+   }
+  },
+  "groupchatapimicroserviceusersService7694068B": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "HttpConfig": {
+     "Endpoint": "http://user-service-ALB-784304730.us-east-1.elb.amazonaws.com"
+    },
+    "Name": "usersService",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceusersServiceServiceRole7F0C49B3",
+      "Arn"
+     ]
+    },
+    "Type": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/Resource"
+   }
+  },
+  "groupchatapimicroservicegroupsServiceServiceRole760B4387": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/ServiceRole/Resource"
+   }
+  },
+  "groupchatapimicroservicegroupsService25ABAA53": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "HttpConfig": {
+     "Endpoint": "http://group-service-ALB-55079206.us-east-1.elb.amazonaws.com"
+    },
+    "Name": "groupsService",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "groupchatapimicroservicegroupsServiceServiceRole760B4387",
+      "Arn"
+     ]
+    },
+    "Type": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/Resource"
+   }
+  },
+  "groupchatapimicroservicemessagesServiceServiceRoleFF0024EB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/ServiceRole/Resource"
+   }
+  },
+  "groupchatapimicroservicemessagesService06608435": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "HttpConfig": {
+     "Endpoint": "http://message-service-ALB-94947678.us-east-1.elb.amazonaws.com"
+    },
+    "Name": "messagesService",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "groupchatapimicroservicemessagesServiceServiceRoleFF0024EB",
+      "Arn"
+     ]
+    },
+    "Type": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/Resource"
+   }
+  },
+  "groupchatapimicroservicetypingIndicatorServiceServiceRoleE0F5A29F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appsync.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/ServiceRole/Resource"
+   }
+  },
+  "groupchatapimicroservicetypingIndicatorService544F85AA": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "HttpConfig": {
+     "Endpoint": "http://typing-indicator-service-ALB-929286925.us-east-1.elb.amazonaws.com"
+    },
+    "Name": "typingIndicatorService",
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "groupchatapimicroservicetypingIndicatorServiceServiceRoleE0F5A29F",
+      "Arn"
+     ]
+    },
+    "Type": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/Resource"
+   }
+  },
+  "groupchatapimicroservicenone63D44E69": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "Name": "none",
+    "Type": "NONE"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/none/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createUserAccountFunction7228F745": {
+   "Type": "AWS::AppSync::FunctionConfiguration",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc6a7d724d689a6167d4eebde129170c6b71583f21d5a94e870cae12f8e00903.js"
+    },
+    "DataSourceName": "usersService",
+    "FunctionVersion": "2018-05-29",
+    "Name": "createUserAccountFunction",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    }
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0",
+    "groupchatapimicroserviceusersService7694068B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/createUserAccountFunction/Resource"
+   }
+  },
+  "formatUserAccountInputFunction436ABD42": {
+   "Type": "AWS::AppSync::FunctionConfiguration",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e78a55490d393293e5b13e717bb8ff90b7e8307fa66e5091f8c7412a667603f9.js"
+    },
+    "DataSourceName": "none",
+    "FunctionVersion": "2018-05-29",
+    "Name": "formatUserAccountInputFunction",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    }
+   },
+   "DependsOn": [
+    "groupchatapimicroservicenone63D44E69",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Resource"
+   }
+  },
+  "createUserAccountPipelineResolver9A4B4549": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d45257b5fbaa507930298e0f715e8643fef5c2d5f20cf9fdc1086353317020f.js"
+    },
+    "FieldName": "createUserAccount",
+    "Kind": "PIPELINE",
+    "PipelineConfig": {
+     "Functions": [
+      {
+       "Fn::GetAtt": [
+        "formatUserAccountInputFunction436ABD42",
+        "FunctionId"
+       ]
+      },
+      {
+       "Fn::GetAtt": [
+        "createUserAccountFunction7228F745",
+        "FunctionId"
+       ]
+      }
+     ]
+    },
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Resource"
+   }
+  },
+  "getUserAccountResolver74DFCCAD": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/681590cef346019d068d495b2309797b672064d22c87a3b30c30c64d99f10020.js"
+    },
+    "DataSourceName": "usersService",
+    "FieldName": "getUserAccount",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Query"
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0",
+    "groupchatapimicroserviceusersService7694068B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/getUserAccountResolver/Resource"
+   }
+  },
+  "getMessagesPerGroupResolverEF8D6992": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60e330a5664a1b44745e82450f0279577f4452d0d1cbb19fa2cab4f386552c1e.js"
+    },
+    "DataSourceName": "groupsService",
+    "FieldName": "getGroupMessages",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Query"
+   },
+   "DependsOn": [
+    "groupchatapimicroservicegroupsService25ABAA53",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Resource"
+   }
+  },
+  "getUsersResolverDF0AEBAE": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce9735a3a46fc5cea5ff38e0638c3288f90f1b079d17f0cf59d8d814eea13121.js"
+    },
+    "DataSourceName": "usersService",
+    "FieldName": "getUsers",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Query"
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0",
+    "groupchatapimicroserviceusersService7694068B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/getUsersResolver/Resource"
+   }
+  },
+  "createGroupResolver49BA26E8": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18160ce43aae54e9d05b5d291d8fb232c2e694b531ff55a7505928fa06766ebd.js"
+    },
+    "DataSourceName": "groupsService",
+    "FieldName": "createGroup",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "groupchatapimicroservicegroupsService25ABAA53",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/createGroupResolver/Resource"
+   }
+  },
+  "sendGroupMessageResolverA47C15C4": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9813ea0b2428d4f1da6910dc6414ecc041664611547fa9d2422abe88a4cab7e.js"
+    },
+    "DataSourceName": "messagesService",
+    "FieldName": "sendGroupMessage",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "groupchatapimicroservicemessagesService06608435",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Resource"
+   }
+  },
+  "addGroupParticipantResolver0092D530": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d9352e4d151128bfa493af026adbf59ae0913297716782fe0af863f58df87ebe.js"
+    },
+    "DataSourceName": "groupsService",
+    "FieldName": "addGroupParticipant",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "groupchatapimicroservicegroupsService25ABAA53",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Resource"
+   }
+  },
+  "getGroupResolverF266DEAE": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f2a8aa0573a81e6db6c31d0003cb5092451b39e2ecb65301f6de12349b8bbfe.js"
+    },
+    "DataSourceName": "groupsService",
+    "FieldName": "getGroup",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Query"
+   },
+   "DependsOn": [
+    "groupchatapimicroservicegroupsService25ABAA53",
+    "groupchatapimicroserviceSchema30CEC9E0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/getGroupResolver/Resource"
+   }
+  },
+  "addTypingIndicatorResolverD49515B8": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "groupchatapimicroserviceC403847E",
+      "ApiId"
+     ]
+    },
+    "CodeS3Location": {
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/903563835ba15c1dc51e25c1664e5f83f22ef5a6dd827a9fcbaab1e9f68b9e1e.js"
+    },
+    "DataSourceName": "typingIndicatorService",
+    "FieldName": "addTypingIndicator",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "groupchatapimicroserviceSchema30CEC9E0",
+    "groupchatapimicroservicetypingIndicatorService544F85AA"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOzW6DMBCEnyV345JEkXolVG2lpn/wANHWbMgGsF3WToQQ717ZNFV6mm88I8+u5HKzkekCLpyoqkla+pJj6UA1Ai68H8FaHrSS41MP9vjdZpZEftDRfe7+u1IdsYPwkFl6wUE8O2cfwEFpfK8wBDfuzWi8sdk89Oi1cmR0KF85N/pAte8hBgWyac/Yh8aVJ0HQybEwbVyJ+mFaUkOwM02iNTXLnakLdKjjX7zeAzM6llkQwWu59apBtwXGKU5dL//j2Cwd1KTrELyCtb/47p31LlBudEVhYhLaVChPfHde3stVKtPFiYmS3mtHHcpi1h81nCXnhwEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkGroupChatMicroserviceStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "appsyncapikey": {
+   "Value": {
+    "Fn::GetAtt": [
+     "groupchatapimicroservicedefaultApiKey2A5B81A5",
+     "ApiKey"
+    ]
+   }
+  },
+  "appsyncendpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "groupchatapimicroserviceC403847E",
+     "GraphQLUrl"
+    ]
+   }
+  },
+  "appsyncapiId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "groupchatapimicroserviceC403847E",
+     "ApiId"
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

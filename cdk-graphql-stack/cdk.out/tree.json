@@ -1,0 +1,1509 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "CdkGroupChatMicroserviceStack": {
+        "id": "CdkGroupChatMicroserviceStack",
+        "path": "CdkGroupChatMicroserviceStack",
+        "children": {
+          "group-chat-api-microservice": {
+            "id": "group-chat-api-microservice",
+            "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice",
+            "children": {
+              "ApiLogsRole": {
+                "id": "ApiLogsRole",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/ApiLogsRole",
+                "children": {
+                  "ImportApiLogsRole": {
+                    "id": "ImportApiLogsRole",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/ApiLogsRole/ImportApiLogsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/ApiLogsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appsync.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "API_KEY",
+                    "logConfig": {
+                      "cloudWatchLogsRoleArn": {
+                        "Fn::GetAtt": [
+                          "groupchatapimicroserviceApiLogsRoleA76CCCA9",
+                          "Arn"
+                        ]
+                      },
+                      "fieldLogLevel": "ALL"
+                    },
+                    "name": "groupChatApiMicroservice",
+                    "xrayEnabled": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "2.155.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\n\ntype Mutation {\n  createUserAccount(userInput: CreateUserInput!): User! @aws_api_key\n  createGroup(input: CreateGroupInput!): Group! @aws_api_key\n  addGroupParticipant(\n    group_id: String!\n    user_id: String!\n    role: String!\n  ): String! @aws_api_key\n  sendGroupMessage(input: CreateMessageInput!): Message! @aws_api_key\n  addTypingIndicator(input: CreateTypingInput!): Typing! @aws_api_key\n}\n\ntype Query {\n  getUserAccount(user_id: String!): User! @aws_api_key\n  getGroup(group_id: String!): Group! @aws_api_key\n  getGroupMessages(group_id: String!): GroupMessagesResult! @aws_api_key\n  getGroups(token: String, limit: Int!): GroupsResult! @aws_api_key\n  getUsers: UsersResult! @aws_api_key\n}\ntype Subscription {\n  onCreateMessages: Message\n    @aws_subscribe(mutations: [\"sendGroupMessage\"])\n    @aws_api_key\n\n  onAddingTypingIndicator: Typing\n    @aws_subscribe(mutations: [\"addTypingIndicator\"])\n    @aws_api_key\n}\ntype User @aws_api_key {\n  id: String!\n  username: String!\n  email: AWSEmail!\n  profile_pic_url: String\n  created_at: AWSTimestamp!\n  updated_at: AWSTimestamp\n}\n\ntype Group @aws_api_key {\n  id: String!\n  group_name: String!\n  creator_id: String!\n  group_description: String!\n  last_message: Message\n  group_url: String\n  created_at: AWSTimestamp!\n  members: [Member!]!\n  messages: [Message!]\n  updated_at: AWSTimestamp\n}\n\ntype GroupMessagesResult @aws_api_key {\n  items: [Message!]!\n}\ntype GroupsResult @aws_api_key {\n  items: [Group!]!\n}\n\ntype UsersResult @aws_api_key {\n  items: [User!]!\n}\n\ntype Message @aws_api_key {\n  id: String!\n  user_id: String!\n  group_id: String!\n  message_type: MESSAGETYPE!\n  message_content: String\n  image_url: String\n  video_url: String\n  created_at: AWSTimestamp!\n  updated_at: AWSTimestamp\n}\ninput CreateUserInput @aws_api_key {\n  username: String!\n  email: AWSEmail!\n  profile_pic_url: String\n}\n\ninput CreateMessageInput @aws_api_key {\n  user_id: String!\n  group_id: String!\n  message_type: MESSAGETYPE!\n  message_content: String\n  image_url: String\n  video_url: String\n}\n\ninput CreateGroupInput @aws_api_key {\n  group_name: String!\n  creator_id: String!\n  group_description: String!\n  group_url: String\n}\n\ntype Typing @aws_api_key {\n  id: String!\n  user_id: String!\n  group_id: String!\n  typing: Boolean!\n}\n\ninput CreateTypingInput @aws_api_key {\n  user_id: String!\n  group_id: String!\n  typing: Boolean!\n}\n\ntype Member @aws_api_key {\n  user_id: String!\n  role: ROLE!\n}\nenum ROLE {\n  ADMIN\n  MEMBER\n}\nenum MESSAGETYPE {\n  TEXT\n  IMAGE\n  VIDEO\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "2.155.0"
+                }
+              },
+              "defaultApiKey": {
+                "id": "defaultApiKey",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/defaultApiKey",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "description": "default auth mode",
+                    "expires": 1726743227
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "version": "2.155.0"
+                }
+              },
+              "LogRetention": {
+                "id": "LogRetention",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/LogRetention",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/LogRetention/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "2.155.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.155.0"
+                }
+              },
+              "usersService": {
+                "id": "usersService",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.155.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.155.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceC403847E",
+                            "ApiId"
+                          ]
+                        },
+                        "httpConfig": {
+                          "endpoint": "http://user-service-ALB-784304730.us-east-1.elb.amazonaws.com"
+                        },
+                        "name": "usersService",
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceusersServiceServiceRole7F0C49B3",
+                            "Arn"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.HttpDataSource",
+                  "version": "2.155.0"
+                }
+              },
+              "groupsService": {
+                "id": "groupsService",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.155.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.155.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceC403847E",
+                            "ApiId"
+                          ]
+                        },
+                        "httpConfig": {
+                          "endpoint": "http://group-service-ALB-55079206.us-east-1.elb.amazonaws.com"
+                        },
+                        "name": "groupsService",
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroservicegroupsServiceServiceRole760B4387",
+                            "Arn"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.HttpDataSource",
+                  "version": "2.155.0"
+                }
+              },
+              "messagesService": {
+                "id": "messagesService",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.155.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.155.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceC403847E",
+                            "ApiId"
+                          ]
+                        },
+                        "httpConfig": {
+                          "endpoint": "http://message-service-ALB-94947678.us-east-1.elb.amazonaws.com"
+                        },
+                        "name": "messagesService",
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroservicemessagesServiceServiceRoleFF0024EB",
+                            "Arn"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.HttpDataSource",
+                  "version": "2.155.0"
+                }
+              },
+              "typingIndicatorService": {
+                "id": "typingIndicatorService",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.155.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "appsync.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.155.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceC403847E",
+                            "ApiId"
+                          ]
+                        },
+                        "httpConfig": {
+                          "endpoint": "http://typing-indicator-service-ALB-929286925.us-east-1.elb.amazonaws.com"
+                        },
+                        "name": "typingIndicatorService",
+                        "serviceRoleArn": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroservicetypingIndicatorServiceServiceRoleE0F5A29F",
+                            "Arn"
+                          ]
+                        },
+                        "type": "HTTP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.HttpDataSource",
+                  "version": "2.155.0"
+                }
+              },
+              "none": {
+                "id": "none",
+                "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/none",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/group-chat-api-microservice/none/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "groupchatapimicroserviceC403847E",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "none",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "2.155.0"
+            }
+          },
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
+            "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:DeleteRetentionPolicy",
+                                    "logs:PutRetentionPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+                            "roles": [
+                              {
+                                "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.155.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "CdkGroupChatMicroserviceStack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "2.155.0"
+            }
+          },
+          "createUserAccountFunction": {
+            "id": "createUserAccountFunction",
+            "path": "CdkGroupChatMicroserviceStack/createUserAccountFunction",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/createUserAccountFunction/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/createUserAccountFunction/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/createUserAccountFunction/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/createUserAccountFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc6a7d724d689a6167d4eebde129170c6b71583f21d5a94e870cae12f8e00903.js"
+                    },
+                    "dataSourceName": "usersService",
+                    "functionVersion": "2018-05-29",
+                    "name": "createUserAccountFunction",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.155.0"
+            }
+          },
+          "formatUserAccountInputFunction": {
+            "id": "formatUserAccountInputFunction",
+            "path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e78a55490d393293e5b13e717bb8ff90b7e8307fa66e5091f8c7412a667603f9.js"
+                    },
+                    "dataSourceName": "none",
+                    "functionVersion": "2018-05-29",
+                    "name": "formatUserAccountInputFunction",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.155.0"
+            }
+          },
+          "createUserAccountPipelineResolver": {
+            "id": "createUserAccountPipelineResolver",
+            "path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d45257b5fbaa507930298e0f715e8643fef5c2d5f20cf9fdc1086353317020f.js"
+                    },
+                    "fieldName": "createUserAccount",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "formatUserAccountInputFunction436ABD42",
+                            "FunctionId"
+                          ]
+                        },
+                        {
+                          "Fn::GetAtt": [
+                            "createUserAccountFunction7228F745",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Mutation"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "getUserAccountResolver": {
+            "id": "getUserAccountResolver",
+            "path": "CdkGroupChatMicroserviceStack/getUserAccountResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/getUserAccountResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/getUserAccountResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/getUserAccountResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/getUserAccountResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/681590cef346019d068d495b2309797b672064d22c87a3b30c30c64d99f10020.js"
+                    },
+                    "dataSourceName": "usersService",
+                    "fieldName": "getUserAccount",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Query"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "getMessagesPerGroupResolver": {
+            "id": "getMessagesPerGroupResolver",
+            "path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60e330a5664a1b44745e82450f0279577f4452d0d1cbb19fa2cab4f386552c1e.js"
+                    },
+                    "dataSourceName": "groupsService",
+                    "fieldName": "getGroupMessages",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Query"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "getUsersResolver": {
+            "id": "getUsersResolver",
+            "path": "CdkGroupChatMicroserviceStack/getUsersResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/getUsersResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/getUsersResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/getUsersResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/getUsersResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce9735a3a46fc5cea5ff38e0638c3288f90f1b079d17f0cf59d8d814eea13121.js"
+                    },
+                    "dataSourceName": "usersService",
+                    "fieldName": "getUsers",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Query"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "createGroupResolver": {
+            "id": "createGroupResolver",
+            "path": "CdkGroupChatMicroserviceStack/createGroupResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/createGroupResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/createGroupResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/createGroupResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/createGroupResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18160ce43aae54e9d05b5d291d8fb232c2e694b531ff55a7505928fa06766ebd.js"
+                    },
+                    "dataSourceName": "groupsService",
+                    "fieldName": "createGroup",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Mutation"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "sendGroupMessageResolver": {
+            "id": "sendGroupMessageResolver",
+            "path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9813ea0b2428d4f1da6910dc6414ecc041664611547fa9d2422abe88a4cab7e.js"
+                    },
+                    "dataSourceName": "messagesService",
+                    "fieldName": "sendGroupMessage",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Mutation"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "addGroupParticipantResolver": {
+            "id": "addGroupParticipantResolver",
+            "path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d9352e4d151128bfa493af026adbf59ae0913297716782fe0af863f58df87ebe.js"
+                    },
+                    "dataSourceName": "groupsService",
+                    "fieldName": "addGroupParticipant",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Mutation"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "getGroupResolver": {
+            "id": "getGroupResolver",
+            "path": "CdkGroupChatMicroserviceStack/getGroupResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/getGroupResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/getGroupResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/getGroupResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/getGroupResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f2a8aa0573a81e6db6c31d0003cb5092451b39e2ecb65301f6de12349b8bbfe.js"
+                    },
+                    "dataSourceName": "groupsService",
+                    "fieldName": "getGroup",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Query"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "addTypingIndicatorResolver": {
+            "id": "addTypingIndicatorResolver",
+            "path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.155.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.155.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.155.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "groupchatapimicroserviceC403847E",
+                        "ApiId"
+                      ]
+                    },
+                    "codeS3Location": {
+                      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/903563835ba15c1dc51e25c1664e5f83f22ef5a6dd827a9fcbaab1e9f68b9e1e.js"
+                    },
+                    "dataSourceName": "typingIndicatorService",
+                    "fieldName": "addTypingIndicator",
+                    "kind": "UNIT",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    },
+                    "typeName": "Mutation"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.155.0"
+            }
+          },
+          "appsync api key": {
+            "id": "appsync api key",
+            "path": "CdkGroupChatMicroserviceStack/appsync api key",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.155.0"
+            }
+          },
+          "appsync endpoint": {
+            "id": "appsync endpoint",
+            "path": "CdkGroupChatMicroserviceStack/appsync endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.155.0"
+            }
+          },
+          "appsync apiId": {
+            "id": "appsync apiId",
+            "path": "CdkGroupChatMicroserviceStack/appsync apiId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.155.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CdkGroupChatMicroserviceStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CdkGroupChatMicroserviceStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.155.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "CdkGroupChatMicroserviceStack/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "2.155.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CdkGroupChatMicroserviceStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.155.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CdkGroupChatMicroserviceStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.155.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.155.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.155.0"
+    }
+  }
+}

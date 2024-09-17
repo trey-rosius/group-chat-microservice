@@ -1,0 +1,263 @@
+{
+  "version": "36.0.22",
+  "artifacts": {
+    "CdkGroupChatMicroserviceStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CdkGroupChatMicroserviceStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CdkGroupChatMicroserviceStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CdkGroupChatMicroserviceStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a26a53029b986725b6d4e7a6c00a1cdd4707ddd3f6a9458c065c551e44287689.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CdkGroupChatMicroserviceStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CdkGroupChatMicroserviceStack.assets"
+      ],
+      "metadata": {
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/ApiLogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceApiLogsRoleA76CCCA9"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceC403847E"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceSchema30CEC9E0"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/defaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicedefaultApiKey2A5B81A5"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceLogRetention9A8748A2"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceusersServiceServiceRole7F0C49B3"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/usersService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroserviceusersService7694068B"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicegroupsServiceServiceRole760B4387"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/groupsService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicegroupsService25ABAA53"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicemessagesServiceServiceRoleFF0024EB"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/messagesService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicemessagesService06608435"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicetypingIndicatorServiceServiceRoleE0F5A29F"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/typingIndicatorService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicetypingIndicatorService544F85AA"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/group-chat-api-microservice/none/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatapimicroservicenone63D44E69"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/createUserAccountFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createUserAccountFunction7228F745"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/formatUserAccountInputFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "formatUserAccountInputFunction436ABD42"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/createUserAccountPipelineResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createUserAccountPipelineResolver9A4B4549"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/getUserAccountResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getUserAccountResolver74DFCCAD"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/getMessagesPerGroupResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getMessagesPerGroupResolverEF8D6992"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/getUsersResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getUsersResolverDF0AEBAE"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/createGroupResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createGroupResolver49BA26E8"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/sendGroupMessageResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sendGroupMessageResolverA47C15C4"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/addGroupParticipantResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "addGroupParticipantResolver0092D530"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/getGroupResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "getGroupResolverF266DEAE"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/addTypingIndicatorResolver/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "addTypingIndicatorResolverD49515B8"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/appsync api key": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "appsyncapikey"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/appsync endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "appsyncendpoint"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/appsync apiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "appsyncapiId"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CdkGroupChatMicroserviceStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CdkGroupChatMicroserviceStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
