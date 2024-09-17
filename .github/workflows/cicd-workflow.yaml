@@ -58,7 +58,7 @@ jobs:
 
       - name: Create Pub/Sub Component
         run: |
-          diagrid component create aws-pubsub --type pubsub.aws.snssqs --metadata accessKey=${{ secrets.AWS_ACCESS_KEY_ID }} --metadata secretKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} --metadata awsRegion=${{ secrets.AWS_DEFAULT_REGION }} --project ${{secrets.DIAGRID_PROJECT}}
+          diagrid component create aws-pubsub --type pubsub.aws.snssqs --metadata accessKey=${{ secrets.AWS_ACCESS_KEY_ID }} --metadata secretKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} --metadata awsRegion=${{ secrets.AWS_DEFAULT_REGION }} --project ${{ secrets.DIAGRID_PROJECT }}
       - name: Create State Component
         run: |
           for service in ./services/*/ ; do
