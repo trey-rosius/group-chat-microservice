@@ -8,7 +8,6 @@ on:
 jobs:
   run-diagrid-cmd:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
@@ -225,6 +224,10 @@ jobs:
       - name: Install the CDK Dependency
         run: |
           npm install -g aws-cdk
+      - name: Install other dependencies
+        run: |
+          npm install
+        working-directory: ./cdk-graphql-stack
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
