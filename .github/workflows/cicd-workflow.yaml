@@ -57,6 +57,8 @@ jobs:
           # Output the JSON array
           echo "JSON Array:"
           cat alb_services.json
+          
+          cdk deploy CdkGroupChatMicroserviceStack --require-approval=never -c configfile=alb_services.json
       - name: Synthesize CdkGroupChatMicroserviceStack
         run: |
           json_array=$(cat alb_services.json)
