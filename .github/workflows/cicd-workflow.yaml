@@ -47,7 +47,7 @@ jobs:
             service_name=$(basename "$service")
             echo "DynamoDB table name : ${service_name}-table"
             table_name = "${service_name}-table"
-            aws dynamodb create-table --table-name $table_name --attribute-definitions AttributeName=key,AttributeType=S --key-schema AttributeName=key,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+            aws dynamodb create-table --table-name "${service_name}-table" --attribute-definitions AttributeName=key,AttributeType=S --key-schema AttributeName=key,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
           done
       - name: Check App Status
         run: |
