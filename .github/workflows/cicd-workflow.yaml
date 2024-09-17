@@ -220,7 +220,7 @@ jobs:
           echo "$json_array" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
-         cat cdk-graphql-stack/alb_services.json
+          cat cdk-graphql-stack/alb_services.json
       - name: Upload alb_services.json
         uses: actions/upload-artifact@v4
         with:
