@@ -37,7 +37,7 @@ jobs:
       # Assign Diagrid Project
       - name: Assign Diagrid Project
         run: |
-          diagrid project use group-chat-microservice --api-key ${{secrets.DIAGRID_API_KEY}}
+          diagrid project use ${{secrets.DIAGRID_PROJECT}} --api-key ${{secrets.DIAGRID_API_KEY}}
       - name: Create Diagrid APP IDS
         run: |
           for service in ./services/*/ ; do
@@ -68,8 +68,14 @@ jobs:
           for service in ./services/*/ ; do
             service_name=$(basename "$service")
             table_name="${service_name}-table"
-            
             diagrid component create $table_name --type state.aws.dynamodb --metadata accessKey=${{ secrets.AWS_ACCESS_KEY_ID }} --metadata secretKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} --metadata awsRegion=${{ secrets.AWS_DEFAULT_REGION }} --metadata table=$table_name --scopes $service_name --project ${{secrets.DIAGRID_PROJECT}}
+            sleep 30
+          done
+      - name: Check App Status
+        run: |
+          for service in ./services/*/ ; do
+            service_name=$(basename "$service")
+            diagrid appid get $service_name -p ${{secrets.DIAGRID_PROJECT}}
           done
       - name: Creating subscriptions
         run: |
