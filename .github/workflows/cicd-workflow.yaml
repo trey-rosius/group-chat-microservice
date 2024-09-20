@@ -3,7 +3,7 @@ name: Deploy the CDK Infrastructure and Build the Catalyst Service Images
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   setup-diagrid-project:
@@ -81,7 +81,7 @@ jobs:
         run: |
           cat ./group_subs.yaml
           diagrid subscriptions apply --wait --file ./group_subs.yaml
-  run-diagrid-cmd:
+  upload-to-ecs:
     runs-on: ubuntu-latest
     needs: setup-diagrid-project
     steps:
@@ -305,7 +305,7 @@ jobs:
 
   deploy-graphql-cdk-stack:
     runs-on: ubuntu-latest
-    needs: run-diagrid-cmd
+    needs: upload-to-ecs
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4

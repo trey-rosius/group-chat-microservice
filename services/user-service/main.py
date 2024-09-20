@@ -10,8 +10,6 @@ import os
 from models.user_model import UserModel, UserModelList
 
 user_db = os.getenv('DAPR_USERS_TABLE', '')
-pubsub_name = os.getenv('DAPR_AWS_PUB_SUB_BROKER', '')
-group_subscription_topic = os.getenv('DAPR_GROUP_SUBSCRIPTION_TOPIC', '')
 
 app = FastAPI()
 
@@ -29,7 +27,6 @@ def health_check():
 def create_user_account(user_model: UserModel):
     with DaprClient() as d:
         logging.info(f"User={user_model.model_dump()}")
-        users=[]
 
         # USERS_LIST_ID
         try:
@@ -58,11 +55,6 @@ def create_user_account(user_model: UserModel):
                              value=user_list.model_dump_json(),
                              state_metadata={"contentType": "application/json"})
                 return user_model
-
-
-
-
-
 
 
         except grpc.RpcError as err:
