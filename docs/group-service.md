@@ -115,3 +115,14 @@ the `user-group-service`.
                 data_content_type='application/json',
             )
 ```
+
+### Get Group
+
+`/groups/{group_id}`
+
+This endpoint retrieves a group's information based on the `group_id`.
+
+```py
+            kv = d.get_state(group_db, group_id)
+            group = GroupModel(**json.loads(kv.data))
+```
