@@ -126,3 +126,58 @@ This endpoint retrieves a group's information based on the `group_id`.
             kv = d.get_state(group_db, group_id)
             group = GroupModel(**json.loads(kv.data))
 ```
+
+### Save Group Messages Endpoint
+
+This endpoint subscribes to the `send-message` event and saves new messages to
+the particular group inside the `group-table`.
+
+The published event has this format
+
+```py
+ group_message_details = {
+                "message_model": message_model.model_dump_json(),
+                "event_type": "send-message"
+            }
+```
+
+So when the event has been received, this section is extracted
+`"message_model": message_model.model_dump_json()`, and appended to the groups
+messages list.
+
+Also, the `last_message_attribute` is also updated.
+
+```py
+
+   message_model = json.loads(cloud_event.data['message_model'])
+
+            # get Group Data
+            group_data = d.get_state(group_db, message_model['group_id'])
+            group_model = GroupModel(**json.loads(group_data.data))
+
+            # Update last message attribute
+            group_model.last_message = message_model
+            group_model.messages.append(message_model)
+
+            # save group data
+            d.save_state(store_name=group_db,
+                         key=str(group_model.id),
+                         value=group_model.model_dump_json(),
+                         state_metadata={"contentType": "application/json"})
+
+```
+
+### Get Messages Per Group Endpoint
+
+`/groups/{group_id}/messages`
+
+Remember each group has a messages list object within it. So here's how we get
+the list of messages per group.
+
+```py
+
+  kv = d.get_state(group_db, group_id)
+            group = GroupModel(**json.loads(kv.data))
+
+            return group.messages
+```
