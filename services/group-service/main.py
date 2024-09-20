@@ -163,7 +163,7 @@ def add_user_to_group(group_id: str, participants: AddGroupParticipantModel):
         except grpc.RpcError as err:
             logging.error(f"Failed to terminate workflow: {err}")
             raise HTTPException(status_code=500, detail=str(err))
-
+'''
 @app.get('/groups')
 def get_groups( token: Optional[str] = None, limit: int = 10):
     with DaprClient() as d:
@@ -202,3 +202,4 @@ def get_groups( token: Optional[str] = None, limit: int = 10):
         except grpc.RpcError as err:
             print(f"Error={err.details()}")
             raise HTTPException(status_code=500, detail=err.details())
+'''
