@@ -8,6 +8,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pubsub
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_GROUPS_TABLE: group-service-table
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
@@ -26,6 +27,7 @@ apps:
     DAPR_AWS_PUB_SUB_BROKER: aws-pubsub
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
   workDir: services/message-service
@@ -42,6 +44,7 @@ apps:
     DAPR_READ_RECEIPTS_TABLE: read-receipts-service-table
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
   workDir: services/read-receipts-service
@@ -59,6 +62,7 @@ apps:
     DAPR_TYPING_INDICATOR_TABLE: typing-indicator-service-table
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
   workDir: services/typing-indicator-service
@@ -77,6 +81,7 @@ apps:
     DAPR_USER_GROUPS_TABLE: user-group-service-table
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
   workDir: services/user-group-service
@@ -94,6 +99,7 @@ apps:
     DAPR_USERS_TABLE: user-service-table
     DAPR_GROUP_SUBSCRIPTION_TOPIC: group-subscription-topic
     DAPR_CLIENT_TIMEOUT_SECONDS: 10
+    DAPR_GROUP_BINDING: aurora-group-db
     DAPR_GRPC_ENDPOINT: https://grpc-prj269169.api.cloud.diagrid.io:443
     DAPR_HTTP_ENDPOINT: https://http-prj269169.api.cloud.diagrid.io
   workDir: services/user-service

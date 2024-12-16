@@ -1,7 +1,7 @@
 # Create Diagrid(Catalyst) Project And Components
 
-Because this project has 6 services, each of these services will represent a
-Catalyst App Id.
+Because this project has 6 services, each service will represent a Catalyst App
+Id.
 
 Communication between services will be done through a pubsub connection that
 consist of SNS topics and SQS subscriptions. AWS SNS/SQS will be configured on
@@ -11,6 +11,8 @@ Each service will have a state for data storage and for this application, we'll
 be using AWS DynamoDB.
 
 ![group](./assets/group_dk.png)
+
+## Project Directory Structure
 
 There's a Github Actions pipeline setup to automate the creation and
 configuration of this project, alongside all it's components.
